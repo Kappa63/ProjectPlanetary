@@ -10,10 +10,15 @@ public enum AtomType {
     CLOSE_ENCLOSURE,
     
     MAGNITUDE_OPERATIONS,
+    SIGMA_OPERATION,
+    PI_OPERATION,
+    
+    POLE,
     
     MANIFEST_ELEMENT,
     
-    END
+    DARK_MATTER,
+    HORIZON
 }
 
 public class Atom
@@ -35,24 +40,38 @@ public static class Reactor
         { "manifest", AtomType.MANIFEST_ELEMENT }
     };
 
-    private const string Neutron = @"(?<MAGNITUDE>\d+)|"
+    private const string Isotope = @"(?<MAGNITUDE>\d+)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
-                                   + @"(?<MAGNITUDE_OPERATIONS>[+\-*/])|"
-                                   + @"(?<EQUIVALENCE>=)|"
+                                   + @"(?<SIGMA_OPERATION>[+\-])|"
+                                   + @"(?<PI_OPERATION>[\*/%])|"
+                                   // + @"(?<MAGNITUDE_OPERATIONS>[+\-*/])|"
+                                   + "(?<EQUIVALENCE>=)|"
                                    + @"(?<OPEN_ENCLOSURE>\()|"
                                    + @"(?<CLOSE_ENCLOSURE>\))|"
-                                   + @"\s+";
+                                   + "(?<POLE>;)|"
+                                   + @"\s+|"
+                                   + "(?<DARK_MATTER>.)";
 
-    public static List<Atom> Fission(string sourceAtom)
+
+    public static List<Atom> Fission(string system)
     {
-        var atoms = new List<Atom>();
-        var matches = Regex.Matches(sourceAtom, Neutron);
-
+        List<Atom> atoms = new List<Atom>();
+        MatchCollection matches = Regex.Matches(system, Isotope);
+        int moleculeNumber = 1;
+        int atomNumber = 0;
         foreach (Match match in matches)
         {
+            atomNumber++;
             foreach (AtomType atomType in Enum.GetValues(typeof(AtomType)))
             {
                 if (!match.Groups[atomType.ToString()].Success) continue;
+                if (atomType == AtomType.DARK_MATTER)
+                    throw new FormatException($"Dark Matter Detected at Molecule {moleculeNumber} Atom {atomNumber}. Unknown Atom Type.");
+                if (atomType == AtomType.POLE)
+                {
+                    atomNumber = 0;
+                    moleculeNumber++;
+                }
                 var value = match.Value;
                 atoms.Add(ObservedAtomType.TryGetValue(value, out var subAtomType)
                     ? new Atom(value, subAtomType)
@@ -61,7 +80,7 @@ public static class Reactor
             }
         }
         
-        atoms.Add(new Atom("EndOfUniverse", AtomType.END));
+        atoms.Add(new Atom("EndOfUniverse", AtomType.HORIZON));
         return atoms;
     }
     
