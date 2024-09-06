@@ -35,3 +35,7 @@ Please note: **Planetary is still in the early stages of development and is a he
 
 - **Modularity and Scalability**  
   Planets can interact seamlessly within systems and universes, allowing for powerful modularity and scalability in your programs.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.
