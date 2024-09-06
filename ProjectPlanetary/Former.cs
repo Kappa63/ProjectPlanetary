@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace ProjectPlanetary;
 
 public class Former
@@ -24,6 +22,7 @@ public class Former
             MoleculeType.ELEMENT => retrieveElement((mol as Element)!, sp),
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
             MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
+            MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
         };
@@ -64,6 +63,14 @@ public class Former
         if (elementModification.Element!.Type != MoleculeType.ELEMENT)
             throw new NotImplementedException("Can only modify simple elements.");
         return sp.modifyElement((elementModification.Element as Element)!.Symbol!, this.formMolecule(elementModification.Magnitude!, sp));
+    }
+
+    private ExplicitFormation formAlloy(ExplicitAlloy alloy, Space sp)
+    {
+        ExplicitFormedAlloy formedAlloy = new ExplicitFormedAlloy();
+        foreach (Property p in alloy.Properties)
+            formedAlloy.properties.Add(p.Symbol!, p.Magnitude!=null?this.formMolecule(p.Magnitude, sp):new ExplicitFormedVacuum()); //sp.retrieveElement(p.Symbol!)
+        return formedAlloy;
     }
 
     private static ExplicitFormation retrieveElement(Element element, Space sp)

@@ -4,12 +4,13 @@ public enum MoleculeType
 {
     COMPOUND,
     ELEMENT_SYNTHESIS,
-    
+    ELEMENT_MODIFICATION,
     EXPLICIT_MAGNITUDE,
     // EXPLICIT_VACUUM,
     ELEMENT,
+    PROPERTY,
+    EXPLICIT_ALLOY,
     MAGNITUDINAL_OPERATION,
-    ELEMENT_MODIFICATION
 }
 
 public abstract class Molecule
@@ -45,6 +46,19 @@ public class Element : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT;
     public string? Symbol { get; set; }
+}
+
+public class Property : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.PROPERTY;
+    public string? Symbol { get; set; }
+    public Operation? Magnitude { get; set; } = null;
+}
+
+public class ExplicitAlloy : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_ALLOY;
+    public List<Property> Properties { get; set; } = new List<Property>();
 }
 
 public class ExplicitMagnitude : Operation

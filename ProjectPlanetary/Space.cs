@@ -5,12 +5,22 @@ public class Space
     private readonly Space? rootSpace;
     private readonly Dictionary<string, ExplicitFormation> elements;
     private readonly List<string> stabilized;
+    private readonly bool singularity;
 
     public Space(Space? rootSpace=null)
     {
+        singularity = (rootSpace == null);
         this.rootSpace = rootSpace;
         this.elements = new Dictionary<string, ExplicitFormation>();
         this.stabilized = new List<string>();
+        if (singularity) bigBang();
+    }
+
+    private void bigBang()
+    {
+        this.synthesizeElement("True", new ExplicitFormedDicho() { state = true }, true);
+        this.synthesizeElement("False", new ExplicitFormedDicho() { state = false }, true);
+        this.synthesizeElement("Vacuum", new ExplicitFormedVacuum(), true);
     }
 
     public ExplicitFormation synthesizeElement(string elementName, ExplicitFormation exForm, bool stability)

@@ -7,13 +7,19 @@ public enum AtomType {
     ELEMENT,
     EQUIVALENCE,
     
-    OPEN_ENCLOSURE,
-    CLOSE_ENCLOSURE,
+    OPEN_ROUND_ENCLOSURE,
+    CLOSE_ROUND_ENCLOSURE,
+    OPEN_SQUARE_ENCLOSURE,
+    CLOSE_SQUARE_ENCLOSURE,
+    OPEN_CURLED_ENCLOSURE,
+    CLOSE_CURLED_ENCLOSURE,
     
-    MAGNITUDE_OPERATIONS,
+    // MAGNITUDE_OPERATIONS,
     SIGMA_OPERATOR,
     PI_OPERATOR,
     
+    CONDUIT,
+    SEPARATOR,
     POLE,
     
     ELEMENT_SYNTHESIZER,
@@ -48,11 +54,16 @@ public static class Reactor
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
-                                   // + @"(?<MAGNITUDE_OPERATIONS>[+\-*/])|"
-                                   + "(?<EQUIVALENCE>=)|"
-                                   + @"(?<OPEN_ENCLOSURE>\()|"
-                                   + @"(?<CLOSE_ENCLOSURE>\))|"
-                                   + "(?<POLE>;)|"
+                                   + @"(?<EQUIVALENCE>\=)|"
+                                   + @"(?<OPEN_ROUND_ENCLOSURE>\()|"
+                                   + @"(?<CLOSE_ROUND_ENCLOSURE>\))|"
+                                   + @"(?<OPEN_SQUARE_ENCLOSURE>\[)|"
+                                   + @"(?<CLOSE_SQUARE_ENCLOSURE>\])|"
+                                   + @"(?<OPEN_CURLED_ENCLOSURE>\{)|"
+                                   + @"(?<CLOSE_CURLED_ENCLOSURE>\})|"
+                                   + @"(?<POLE>\;)|"
+                                   + @"(?<SEPARATOR>\,)|"
+                                   + @"(?<CONDUIT>\:)|"
                                    + @"\s+|"
                                    + "(?<DARK_MATTER>.)";
 

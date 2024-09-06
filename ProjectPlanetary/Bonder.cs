@@ -10,6 +10,11 @@ public class Bonder
     {
         this.Atoms = Reactor.Fission(system);
 
+        // foreach (var a in this.Atoms)
+        // {
+        //     Console.WriteLine(a.Type);
+        // }
+
         Compound compound = new Compound()
         {
             Molecules = new List<Molecule>()
@@ -40,14 +45,11 @@ public class Bonder
 
     private Molecule bondMolecule()
     {
-        switch (this.retrieveAtom(false).Type)
+        return this.retrieveAtom(false).Type switch
         {
-            case AtomType.ELEMENT_SYNTHESIZER:
-            case AtomType.ELEMENT_STABILIZER:
-                return this.bondElementSynthesis();
-            default:
-                return this.bondOperation();
-        }
+            AtomType.ELEMENT_SYNTHESIZER or AtomType.ELEMENT_STABILIZER => this.bondElementSynthesis(),
+            _ => this.bondOperation()
+        };
     }
 
     private Molecule bondElementSynthesis()
@@ -85,7 +87,7 @@ public class Bonder
 
     private Operation bondModificationOperation()
     {
-        Operation preAssignmentOperation = this.bondSigmaOperation();
+        Operation preAssignmentOperation = this.bondAlloyOperation();
 
         if (this.retrieveAtom(false).Type != AtomType.EQUIVALENCE) return preAssignmentOperation;
         this.retrieveAtom(true);
@@ -94,6 +96,48 @@ public class Bonder
         {
             Element = preAssignmentOperation,
             Magnitude = postAssignmentOperation
+        };
+    }
+
+    private Operation bondAlloyOperation()
+    {
+        if (this.retrieveAtom(false).Type != AtomType.OPEN_CURLED_ENCLOSURE)
+            return this.bondSigmaOperation();
+        this.retrieveAtom(true);
+        List<Property> properties = new List<Property>();
+        while (this.checkHorizon() && this.retrieveAtom(false).Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+        {
+            string symbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
+
+            switch (this.retrieveAtom(false).Type)
+            {
+                case AtomType.SEPARATOR:
+                    this.retrieveAtom(true);
+                    goto case AtomType.CLOSE_CURLED_ENCLOSURE;
+                case AtomType.CLOSE_CURLED_ENCLOSURE:
+                    properties.Add(new Property()
+                    {
+                        Symbol = symbol,
+                    });
+                    continue;
+            }
+            this.retrieveAtom(true, AtomType.CONDUIT);
+            
+            properties.Add(new Property()
+            {
+                Symbol = symbol,
+                Magnitude = this.bondOperation()
+            });
+
+            if (this.retrieveAtom(false).Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+                this.retrieveAtom(true, AtomType.SEPARATOR);
+        }
+        
+        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
+
+        return new ExplicitAlloy()
+        {
+            Properties = properties
         };
     }
     
@@ -150,10 +194,10 @@ public class Bonder
             // case AtomType.VACUUM:
             //     this.getAtom(true);
             //     return new ExplicitVacuum();
-            case AtomType.OPEN_ENCLOSURE:   
+            case AtomType.OPEN_ROUND_ENCLOSURE:   
                 this.retrieveAtom(true);
                 Operation operation = this.bondOperation();
-                this.retrieveAtom(true, AtomType.CLOSE_ENCLOSURE);
+                this.retrieveAtom(true, AtomType.CLOSE_ROUND_ENCLOSURE);
                 return operation;
             default:
                 throw new MalformedLineException($"Unknown Atom type: {atomT}");
