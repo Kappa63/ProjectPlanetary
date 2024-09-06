@@ -6,20 +6,20 @@ public class Bonder
 {
     private List<Atom> Atoms = new List<Atom>();
 
-    public Universe createUniverse(string system)
+    public Compound createCompound(string system)
     {
         this.Atoms = Reactor.Fission(system);
-        Universe universe = new Universe()
+        Compound compound = new Compound()
         {
             Molecules = new List<Molecule>()
         };
 
         while (this.checkHorizon())
         {
-            universe.Molecules.Add(this.bondMolecule());
+            compound.Molecules.Add(this.bondMolecule());
         }
 
-        return universe;
+        return compound;
     }
     
     private bool checkHorizon()
@@ -27,15 +27,11 @@ public class Bonder
         return this.Atoms.First().Type != AtomType.HORIZON;
     }
 
-    private Atom getAtom()
-    {
-        return this.Atoms.First();
-    }
-
-    private Atom decayAtom(AtomType? expectedAtom=null)
+    private Atom getAtom(bool decay, AtomType? expectedAtom=null)
     {
         Atom decayedAtom = this.Atoms.First();
-        this.Atoms.RemoveAt(0);
+        if (decay)
+            this.Atoms.RemoveAt(0);
         if (expectedAtom.HasValue && expectedAtom != decayedAtom.Type)
             throw new MalformedLineException($"Expected {expectedAtom} but got {decayedAtom.Type}");
         return decayedAtom;
@@ -55,9 +51,9 @@ public class Bonder
     {
         Operation prePiOperation = this.bondPiOperation();
 
-        while (this.getAtom().Type == AtomType.SIGMA_OPERATION)
+        while (this.getAtom(false).Type == AtomType.SIGMA_OPERATION)
         {
-            string operation = this.decayAtom().Value;
+            string operation = this.getAtom(true).Value;
             Operation postPiOperation = this.bondPiOperation();
             prePiOperation = new MagnitudinalOperation()
             {
@@ -74,9 +70,9 @@ public class Bonder
     {
         Operation preGeneralOperation = this.bondGeneralOperation();
 
-        while (this.getAtom().Type == AtomType.PI_OPERATION)
+        while (this.getAtom(false).Type == AtomType.PI_OPERATION)
         {
-            string operation = this.decayAtom().Value;
+            string operation = this.getAtom(true).Value;
             Operation postGeneralOperation = this.bondGeneralOperation();
             preGeneralOperation = new MagnitudinalOperation()
             {
@@ -90,21 +86,24 @@ public class Bonder
 
     private Operation bondGeneralOperation()
     {
-        AtomType atomT = this.getAtom().Type;
+        AtomType atomT = this.getAtom(false).Type;
 
         switch (atomT)
         {
             case AtomType.ELEMENT:
-                return new Element() { Symbol = this.decayAtom().Value };
+                return new Element() { Symbol = this.getAtom(true).Value };
             case AtomType.MAGNITUDE:
                 return new ExplicitMagnitude()
                 {
-                    Magnitude = double.Parse(this.decayAtom().Value)
+                    Magnitude = double.Parse(this.getAtom(true).Value)
                 };
+            case AtomType.VACUUM:
+                this.getAtom(true);
+                return new ExplicitVacuum();
             case AtomType.OPEN_ENCLOSURE:
-                this.decayAtom();
+                this.getAtom(true);
                 Operation operation = this.bondOperation();
-                this.decayAtom(AtomType.CLOSE_ENCLOSURE);
+                this.getAtom(true, AtomType.CLOSE_ENCLOSURE);
                 return operation;
             default:
                 throw new MalformedLineException($"Unknown Atom type: {atomT}");

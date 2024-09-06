@@ -2,8 +2,9 @@ namespace ProjectPlanetary;
 
 public enum MoleculeType
 {
-    UNIVERSE,
+    COMPOUND,
     EXPLICIT_MAGNITUDE,
+    EXPLICIT_VACUUM,
     ELEMENT,
     MAGNITUDINAL_OPERATION
 }
@@ -13,9 +14,9 @@ public abstract class Molecule
     public abstract MoleculeType Type { get; }
 }
 
-public class Universe : Molecule
+public class Compound : Molecule
 {
-    public override MoleculeType Type { get; } = MoleculeType.UNIVERSE;
+    public override MoleculeType Type { get; } = MoleculeType.COMPOUND;
     public List<Molecule> Molecules { get; set; } = new List<Molecule>(); 
 }
 
@@ -26,7 +27,7 @@ public class MagnitudinalOperation : Operation
     public override MoleculeType Type { get; } = MoleculeType.MAGNITUDINAL_OPERATION;
     public Operation? Pre { get; set; }
     public Operation? Post { get; set; }
-    public string? MagnitudeOperator { get; set; }
+    public string MagnitudeOperator { get; set; } = "+";
 }
 
 public class Element : Operation
@@ -39,5 +40,12 @@ public class ExplicitMagnitude : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
-    public double? Magnitude { get; set; }
+    public double Magnitude { get; set; } = 0;
+}
+
+public class ExplicitVacuum : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_VACUUM;
+
+    public string? Magnitude { get; } = "vacuum";
 }

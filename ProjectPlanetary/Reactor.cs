@@ -2,6 +2,7 @@
 namespace ProjectPlanetary;
 
 public enum AtomType {
+    VACUUM,
     MAGNITUDE,
     ELEMENT,
     EQUIVALENCE,
@@ -37,7 +38,8 @@ public static class Reactor
 {
     private static readonly Dictionary<string, AtomType> ObservedAtomType = new()
     {
-        { "manifest", AtomType.MANIFEST_ELEMENT }
+        { "manifest", AtomType.MANIFEST_ELEMENT },
+        { "vacuum", AtomType.VACUUM }
     };
 
     private const string Isotope = @"(?<MAGNITUDE>\d+)|"
@@ -57,7 +59,7 @@ public static class Reactor
     {
         List<Atom> atoms = new List<Atom>();
         MatchCollection matches = Regex.Matches(system, Isotope);
-        int moleculeNumber = 1;
+        int compoundNumber = 1;
         int atomNumber = 0;
         foreach (Match match in matches)
         {
@@ -66,11 +68,11 @@ public static class Reactor
             {
                 if (!match.Groups[atomType.ToString()].Success) continue;
                 if (atomType == AtomType.DARK_MATTER)
-                    throw new FormatException($"Dark Matter Detected at Molecule {moleculeNumber} Atom {atomNumber}. Unknown Atom Type.");
+                    throw new FormatException($"Dark Matter Detected at Compound {compoundNumber} Atom {atomNumber}. Unknown Atom Type.");
                 if (atomType == AtomType.POLE)
                 {
                     atomNumber = 0;
-                    moleculeNumber++;
+                    compoundNumber++;
                 }
                 var value = match.Value;
                 atoms.Add(ObservedAtomType.TryGetValue(value, out var subAtomType)
