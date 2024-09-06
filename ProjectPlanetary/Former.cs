@@ -23,6 +23,7 @@ public class Former
             MoleculeType.MAGNITUDINAL_OPERATION => this.formOperation((mol as MagnitudinalOperation)!, sp),
             MoleculeType.ELEMENT => retrieveElement((mol as Element)!, sp),
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
+            MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
         };
@@ -58,6 +59,13 @@ public class Former
         };
     }
 
+    private ExplicitFormation formElementModificationOperation(ElementModification elementModification, Space sp)
+    {
+        if (elementModification.Element!.Type != MoleculeType.ELEMENT)
+            throw new NotImplementedException("Can only modify simple elements.");
+        return sp.modifyElement((elementModification.Element as Element)!.Symbol!, this.formMolecule(elementModification.Magnitude!, sp));
+    }
+
     private static ExplicitFormation retrieveElement(Element element, Space sp)
     {
         return sp.retrieveElement(element.Symbol!);
@@ -65,6 +73,6 @@ public class Former
     
     private ExplicitFormation formElement(ElementSynthesis element, Space sp)
     {
-        return sp.synthesizeElement(element.Symbol!, element.Magnitude!=null?this.formMolecule(element.Magnitude, sp):new ExplicitFormedVacuum());
+        return sp.synthesizeElement(element.Symbol!, element.Magnitude!=null?this.formMolecule(element.Magnitude, sp):new ExplicitFormedVacuum(), element.Stable!.Value);
     }
 }

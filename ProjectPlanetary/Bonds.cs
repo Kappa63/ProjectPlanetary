@@ -8,7 +8,8 @@ public enum MoleculeType
     EXPLICIT_MAGNITUDE,
     // EXPLICIT_VACUUM,
     ELEMENT,
-    MAGNITUDINAL_OPERATION
+    MAGNITUDINAL_OPERATION,
+    ELEMENT_MODIFICATION
 }
 
 public abstract class Molecule
@@ -51,6 +52,13 @@ public class ExplicitMagnitude : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
     public double Magnitude { get; set; } = 0;
+}
+
+public class ElementModification : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.ELEMENT_MODIFICATION;
+    public Operation? Element { get; set; }
+    public Operation? Magnitude { get; set; }
 }
 
 // public class ExplicitVacuum : Operation

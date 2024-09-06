@@ -14,13 +14,12 @@ internal static class ProjectPlanetary
         
         Bonder bonder = new Bonder();
         Space space = new Space();
-        space.synthesizeElement("x", new ExplicitFormedMagnitude() { Magnitude = 10 });
-        space.synthesizeElement("True", new ExplicitFormedDicho() { state = true });
-        space.synthesizeElement("False", new ExplicitFormedDicho() { state = false });
-        space.synthesizeElement("vacuum", new ExplicitFormedVacuum());
+        space.synthesizeElement("True", new ExplicitFormedDicho() { state = true }, true);
+        space.synthesizeElement("False", new ExplicitFormedDicho() { state = false }, true);
+        space.synthesizeElement("vacuum", new ExplicitFormedVacuum(), true);
         Former former = new Former();
         
-        Console.WriteLine("\nPlanetary v1.0");
+        Console.WriteLine("\nPlanetary v0.03");
 
         while (true)
         {
@@ -30,7 +29,7 @@ internal static class ProjectPlanetary
             if (system.Contains("exit")) Environment.Exit(0);
             Compound comp = bonder.bondCompound(system);
             ExplicitFormation frm = former.formCompound(comp, space);
-            Console.WriteLine(frm.Type == ExplicitType.MAGNITUDE?JsonSerializer.Serialize(frm as ExplicitFormedMagnitude):"VACUUM");
+            Console.WriteLine(frm.Type == ExplicitType.MAGNITUDE?JsonSerializer.Serialize(frm as ExplicitFormedMagnitude):JsonSerializer.Serialize(frm as ExplicitFormedVacuum));
         }
     }
 }

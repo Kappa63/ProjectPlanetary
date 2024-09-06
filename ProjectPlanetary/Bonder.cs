@@ -56,7 +56,7 @@ public class Bonder
         if (elementalStability) this.retrieveAtom(true, AtomType.ELEMENT_SYNTHESIZER);
         string elementalSymbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
 
-        if (this.retrieveAtom(elementalStability, elementalStability?AtomType.EQUIVALENCE:null).Type == AtomType.POLE)
+        if (this.retrieveAtom(false, elementalStability?AtomType.EQUIVALENCE:null).Type == AtomType.POLE)
         {
             return new ElementSynthesis()
             {
@@ -73,14 +73,28 @@ public class Bonder
             Magnitude = this.bondOperation()
         };
 
-        this.retrieveAtom(true, AtomType.POLE);
+        // this.retrieveAtom(true, AtomType.POLE);
 
         return elementSynthesis;
     }
 
     private Operation bondOperation()
     {
-        return this.bondSigmaOperation();
+        return this.bondModificationOperation();
+    }
+
+    private Operation bondModificationOperation()
+    {
+        Operation preAssignmentOperation = this.bondSigmaOperation();
+
+        if (this.retrieveAtom(false).Type != AtomType.EQUIVALENCE) return preAssignmentOperation;
+        this.retrieveAtom(true);
+        Operation postAssignmentOperation = this.bondModificationOperation();
+        return new ElementModification()
+        {
+            Element = preAssignmentOperation,
+            Magnitude = postAssignmentOperation
+        };
     }
     
     private Operation bondSigmaOperation()
