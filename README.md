@@ -13,16 +13,22 @@ Please note: **Planetary is still in the early stages of development and is a he
 1. **Atom** (Token)  
    The smallest building block of a Planetary program, similar to characters or symbols in other languages.
    
-2. **Compound** (Line)  
-   A logical grouping of atoms and molecules to create a meaningful instruction, analogous to a line of code.
+2. **Element** (Variable)  
+   A synthesized value within a Planetary program that can change or remain stable during execution.
    
-3. **Planet** (Function)  
+3. **Compound** (Line)  
+   A logical grouping of atoms, molecules, and elements to create a meaningful instruction, analogous to a line of code.
+   
+4. **Alloy** (Object)  
+   A combination of elements, functioning together as an object-like structure, allowing for more complex behavior and data representation.
+   
+5. **Planet** (Function)  
    A collection of compounds working together to perform a specific task, akin to a function or method in traditional languages.
    
-4. **System** (File)  
+6. **System** (File)  
    A grouping of planets (functions), which together define a complete module or file.
    
-5. **Universe** (Program)  
+7. **Universe** (Program)  
    The entirety of your system, representing a complete executable program.
 
 ## Features
