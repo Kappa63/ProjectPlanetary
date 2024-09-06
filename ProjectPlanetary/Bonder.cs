@@ -6,9 +6,10 @@ public class Bonder
 {
     private List<Atom> Atoms = new List<Atom>();
 
-    public Compound createCompound(string system)
+    public Compound bondCompound(string system)
     {
         this.Atoms = Reactor.Fission(system);
+
         Compound compound = new Compound()
         {
             Molecules = new List<Molecule>()
@@ -27,7 +28,7 @@ public class Bonder
         return this.Atoms.First().Type != AtomType.HORIZON;
     }
 
-    private Atom getAtom(bool decay, AtomType? expectedAtom=null)
+    private Atom retrieveAtom(bool decay, AtomType? expectedAtom=null)
     {
         Atom decayedAtom = this.Atoms.First();
         if (decay)
@@ -39,7 +40,42 @@ public class Bonder
 
     private Molecule bondMolecule()
     {
-        return this.bondOperation();
+        switch (this.retrieveAtom(false).Type)
+        {
+            case AtomType.ELEMENT_SYNTHESIZER:
+            case AtomType.ELEMENT_STABILIZER:
+                return this.bondElementSynthesis();
+            default:
+                return this.bondOperation();
+        }
+    }
+
+    private Molecule bondElementSynthesis()
+    {
+        bool elementalStability = this.retrieveAtom(true).Type == AtomType.ELEMENT_STABILIZER;
+        if (elementalStability) this.retrieveAtom(true, AtomType.ELEMENT_SYNTHESIZER);
+        string elementalSymbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
+
+        if (this.retrieveAtom(elementalStability, elementalStability?AtomType.EQUIVALENCE:null).Type == AtomType.POLE)
+        {
+            return new ElementSynthesis()
+            {
+                Stable = false,
+                Symbol = elementalSymbol,
+            };
+        } 
+        this.retrieveAtom(true, AtomType.EQUIVALENCE); 
+        
+        ElementSynthesis elementSynthesis =  new ElementSynthesis()
+        {
+            Stable = elementalStability,
+            Symbol = elementalSymbol,
+            Magnitude = this.bondOperation()
+        };
+
+        this.retrieveAtom(true, AtomType.POLE);
+
+        return elementSynthesis;
     }
 
     private Operation bondOperation()
@@ -51,9 +87,9 @@ public class Bonder
     {
         Operation prePiOperation = this.bondPiOperation();
 
-        while (this.getAtom(false).Type == AtomType.SIGMA_OPERATION)
+        while (this.retrieveAtom(false).Type == AtomType.SIGMA_OPERATOR)
         {
-            string operation = this.getAtom(true).Value;
+            string operation = this.retrieveAtom(true).Value;
             Operation postPiOperation = this.bondPiOperation();
             prePiOperation = new MagnitudinalOperation()
             {
@@ -70,9 +106,9 @@ public class Bonder
     {
         Operation preGeneralOperation = this.bondGeneralOperation();
 
-        while (this.getAtom(false).Type == AtomType.PI_OPERATION)
+        while (this.retrieveAtom(false).Type == AtomType.PI_OPERATOR)
         {
-            string operation = this.getAtom(true).Value;
+            string operation = this.retrieveAtom(true).Value;
             Operation postGeneralOperation = this.bondGeneralOperation();
             preGeneralOperation = new MagnitudinalOperation()
             {
@@ -86,24 +122,24 @@ public class Bonder
 
     private Operation bondGeneralOperation()
     {
-        AtomType atomT = this.getAtom(false).Type;
+        AtomType atomT = this.retrieveAtom(false).Type;
 
         switch (atomT)
         {
             case AtomType.ELEMENT:
-                return new Element() { Symbol = this.getAtom(true).Value };
+                return new Element() { Symbol = this.retrieveAtom(true).Value };
             case AtomType.MAGNITUDE:
                 return new ExplicitMagnitude()
                 {
-                    Magnitude = double.Parse(this.getAtom(true).Value)
+                    Magnitude = double.Parse(this.retrieveAtom(true).Value)
                 };
-            case AtomType.VACUUM:
-                this.getAtom(true);
-                return new ExplicitVacuum();
-            case AtomType.OPEN_ENCLOSURE:
-                this.getAtom(true);
+            // case AtomType.VACUUM:
+            //     this.getAtom(true);
+            //     return new ExplicitVacuum();
+            case AtomType.OPEN_ENCLOSURE:   
+                this.retrieveAtom(true);
                 Operation operation = this.bondOperation();
-                this.getAtom(true, AtomType.CLOSE_ENCLOSURE);
+                this.retrieveAtom(true, AtomType.CLOSE_ENCLOSURE);
                 return operation;
             default:
                 throw new MalformedLineException($"Unknown Atom type: {atomT}");

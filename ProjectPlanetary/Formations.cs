@@ -3,7 +3,8 @@ namespace ProjectPlanetary;
 public enum ExplicitType
 {
     MAGNITUDE,
-    VACUUM
+    DICHO,
+    VACUUM,
 }
 
 public abstract class ExplicitFormation
@@ -17,8 +18,13 @@ public class ExplicitFormedMagnitude : ExplicitFormation
     public double Magnitude { get; set; } = 0;
 }
 
+public class ExplicitFormedDicho : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.DICHO;
+    public bool state { get; set; } = false;
+}
+
 public class ExplicitFormedVacuum : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.VACUUM;
-    public string Magnitude { get; } = "vacuum";
 }

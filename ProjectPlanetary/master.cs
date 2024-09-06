@@ -13,6 +13,11 @@ internal static class ProjectPlanetary
         //     Console.WriteLine(at.Type);
         
         Bonder bonder = new Bonder();
+        Space space = new Space();
+        space.synthesizeElement("x", new ExplicitFormedMagnitude() { Magnitude = 10 });
+        space.synthesizeElement("True", new ExplicitFormedDicho() { state = true });
+        space.synthesizeElement("False", new ExplicitFormedDicho() { state = false });
+        space.synthesizeElement("vacuum", new ExplicitFormedVacuum());
         Former former = new Former();
         
         Console.WriteLine("\nPlanetary v1.0");
@@ -23,8 +28,8 @@ internal static class ProjectPlanetary
             string? system = Console.ReadLine();
             if (system == null) continue;
             if (system.Contains("exit")) Environment.Exit(0);
-            Compound comp = bonder.createCompound(system);
-            ExplicitFormation frm = former.formCompound(comp);
+            Compound comp = bonder.bondCompound(system);
+            ExplicitFormation frm = former.formCompound(comp, space);
             Console.WriteLine(frm.Type == ExplicitType.MAGNITUDE?JsonSerializer.Serialize(frm as ExplicitFormedMagnitude):"VACUUM");
         }
     }

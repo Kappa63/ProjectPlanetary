@@ -3,8 +3,10 @@ namespace ProjectPlanetary;
 public enum MoleculeType
 {
     COMPOUND,
+    ELEMENT_SYNTHESIS,
+    
     EXPLICIT_MAGNITUDE,
-    EXPLICIT_VACUUM,
+    // EXPLICIT_VACUUM,
     ELEMENT,
     MAGNITUDINAL_OPERATION
 }
@@ -18,6 +20,14 @@ public class Compound : Molecule
 {
     public override MoleculeType Type { get; } = MoleculeType.COMPOUND;
     public List<Molecule> Molecules { get; set; } = new List<Molecule>(); 
+}
+
+public class ElementSynthesis : Molecule
+{
+    public override MoleculeType Type { get; } = MoleculeType.ELEMENT_SYNTHESIS;
+    public bool? Stable { get; set; }
+    public string? Symbol { get; set; }
+    public Operation? Magnitude { get; set; } = null;
 }
 
 public abstract class Operation : Molecule { }
@@ -43,9 +53,9 @@ public class ExplicitMagnitude : Operation
     public double Magnitude { get; set; } = 0;
 }
 
-public class ExplicitVacuum : Operation
-{
-    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_VACUUM;
-
-    public string? Magnitude { get; } = "vacuum";
-}
+// public class ExplicitVacuum : Operation
+// {
+//     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_VACUUM;
+//
+//     public string? Magnitude { get; } = "vacuum";
+// }

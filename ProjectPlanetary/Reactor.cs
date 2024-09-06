@@ -2,7 +2,7 @@
 namespace ProjectPlanetary;
 
 public enum AtomType {
-    VACUUM,
+    // VACUUM,
     MAGNITUDE,
     ELEMENT,
     EQUIVALENCE,
@@ -11,12 +11,13 @@ public enum AtomType {
     CLOSE_ENCLOSURE,
     
     MAGNITUDE_OPERATIONS,
-    SIGMA_OPERATION,
-    PI_OPERATION,
+    SIGMA_OPERATOR,
+    PI_OPERATOR,
     
     POLE,
     
-    MANIFEST_ELEMENT,
+    ELEMENT_SYNTHESIZER,
+    ELEMENT_STABILIZER,
     
     DARK_MATTER,
     HORIZON
@@ -38,14 +39,15 @@ public static class Reactor
 {
     private static readonly Dictionary<string, AtomType> ObservedAtomType = new()
     {
-        { "manifest", AtomType.MANIFEST_ELEMENT },
-        { "vacuum", AtomType.VACUUM }
+        { "synth", AtomType.ELEMENT_SYNTHESIZER },
+        { "stable", AtomType.ELEMENT_STABILIZER },
+        // { "vacuum", AtomType.VACUUM }
     };
 
     private const string Isotope = @"(?<MAGNITUDE>\d+)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
-                                   + @"(?<SIGMA_OPERATION>[+\-])|"
-                                   + @"(?<PI_OPERATION>[\*/%])|"
+                                   + @"(?<SIGMA_OPERATOR>[+\-])|"
+                                   + @"(?<PI_OPERATOR>[\*/%])|"
                                    // + @"(?<MAGNITUDE_OPERATIONS>[+\-*/])|"
                                    + "(?<EQUIVALENCE>=)|"
                                    + @"(?<OPEN_ENCLOSURE>\()|"
