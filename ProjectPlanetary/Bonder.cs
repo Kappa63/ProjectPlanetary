@@ -9,7 +9,7 @@ public class Bonder
     public Compound bondCompound(string system)
     {
         this.Atoms = Reactor.Fission(system);
-
+        //
         // foreach (var a in this.Atoms)
         // {
         //     Console.WriteLine(a.Type);
@@ -102,7 +102,9 @@ public class Bonder
     private Operation bondAlloyOperation()
     {
         if (this.retrieveAtom(false).Type != AtomType.OPEN_CURLED_ENCLOSURE)
-            return this.bondSigmaOperation();
+        {
+            return this.retrieveAtom(false).Type == AtomType.DICHO_ENCLOSURE ? this.bondDichotomicOperation() : this.bondSigmaOperation();
+        }
         this.retrieveAtom(true);
         List<Property> properties = new List<Property>();
         while (this.checkHorizon() && this.retrieveAtom(false).Type != AtomType.CLOSE_CURLED_ENCLOSURE)
@@ -140,10 +142,100 @@ public class Bonder
             Properties = properties
         };
     }
+
+    private Operation bondDichotomicOperation()
+    {   
+        // if (this.retrieveAtom(false).Type != AtomType.DICHO_ENCLOSURE)
+        //     return this.bondMagnitudinalOperation();
+        this.retrieveAtom(true);
+        Operation tempDichoOp = this.bondDisjunctionOperation();
+        this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
+        return tempDichoOp;
+    }
+
+    private Operation bondDisjunctionOperation()
+    {
+        Operation preJunctionOperation = this.bondJunctionOperation();
+        while (this.retrieveAtom(false).Type == AtomType.DISJUNCTOR)
+        {
+            string operation = this.retrieveAtom(true).Value;
+            Operation postJunctionOperation = this.bondJunctionOperation();
+            preJunctionOperation = new DichotomicOperation()
+            {
+                Pre = preJunctionOperation,
+                Post = postJunctionOperation,
+                DichoOperator = operation,
+            };
+        }
+        return preJunctionOperation;
+    }
+
+    private Operation bondJunctionOperation()
+    {
+        Operation preNegateOperation = this.bondGeneralDichotomicOperation();
+        while (this.retrieveAtom(false).Type == AtomType.CONJUNCTOR)
+        {
+            string operation = this.retrieveAtom(true).Value;
+            Operation postGeneralOperation = this.bondGeneralDichotomicOperation();
+            preNegateOperation = new DichotomicOperation()
+            {
+                Pre = preNegateOperation,
+                Post = postGeneralOperation,
+                DichoOperator = operation,
+            };
+        }
+        return preNegateOperation;
+    }
+
+    // private Operation bondNegateOperation()
+    // {
+    //     if (this.retrieveAtom(false).Type != AtomType.NEGATER)
+    //         return this.bondDisjunctionOperation(false);
+    //     this.retrieveAtom(true);
+    //     return this.bondDisjunctionOperation(true);
+    // }
+    
+    private Operation bondGeneralDichotomicOperation()
+    {
+        AtomType atomT = this.retrieveAtom(false).Type;
+        bool negated = false;
+        if (atomT == AtomType.NEGATER)
+        {
+            negated = true;
+            this.retrieveAtom(true);
+            atomT = this.retrieveAtom(false).Type;
+        }
+
+        switch (atomT)
+        {
+            case AtomType.ELEMENT:
+                return new Element() { Symbol = this.retrieveAtom(true).Value, DichoNegated = negated};
+            case AtomType.MAGNITUDE:
+                return new ExplicitDicho()
+                {
+                    State = negated?double.Parse(this.retrieveAtom(true).Value)==0:double.Parse(this.retrieveAtom(true).Value)!=0,
+                };
+            // case AtomType.VACUUM:
+            //     this.getAtom(true);
+            //     return new ExplicitVacuum();
+            case AtomType.OPEN_ROUND_ENCLOSURE:   
+                this.retrieveAtom(true);
+                Operation operation = this.bondDisjunctionOperation();
+                this.retrieveAtom(true, AtomType.CLOSE_ROUND_ENCLOSURE);
+                return operation;
+            default:
+                throw new MalformedLineException($"Unknown Atom type: {atomT}");
+        }
+    }
+
+    private Operation bondMagnitudinalOperation()
+    {
+        return this.bondSigmaOperation();
+    }
     
     private Operation bondSigmaOperation()
     {
-        Operation prePiOperation = this.bondPiOperation();
+        Operation prePiOperation = (this.retrieveAtom(false).Type != AtomType.SIGMA_OPERATOR)?this.bondPiOperation():new ExplicitMagnitude();
 
         while (this.retrieveAtom(false).Type == AtomType.SIGMA_OPERATOR)
         {
@@ -162,12 +254,12 @@ public class Bonder
 
     private Operation bondPiOperation()
     {
-        Operation preGeneralOperation = this.bondGeneralOperation();
+        Operation preGeneralOperation = this.bondGeneralMagnitudinalOperation();
 
         while (this.retrieveAtom(false).Type == AtomType.PI_OPERATOR)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postGeneralOperation = this.bondGeneralOperation();
+            Operation postGeneralOperation = this.bondGeneralMagnitudinalOperation();
             preGeneralOperation = new MagnitudinalOperation()
             {
                 Pre = preGeneralOperation,
@@ -178,7 +270,7 @@ public class Bonder
         return preGeneralOperation;
     }
 
-    private Operation bondGeneralOperation()
+    private Operation bondGeneralMagnitudinalOperation()
     {
         AtomType atomT = this.retrieveAtom(false).Type;
 

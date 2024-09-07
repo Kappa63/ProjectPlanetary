@@ -6,11 +6,13 @@ public enum MoleculeType
     ELEMENT_SYNTHESIS,
     ELEMENT_MODIFICATION,
     EXPLICIT_MAGNITUDE,
+    EXPLICIT_DICHO,
     // EXPLICIT_VACUUM,
     ELEMENT,
     PROPERTY,
     EXPLICIT_ALLOY,
     MAGNITUDINAL_OPERATION,
+    DICHOTOMIC_OPERATION,
 }
 
 public abstract class Molecule
@@ -42,10 +44,20 @@ public class MagnitudinalOperation : Operation
     public string MagnitudeOperator { get; set; } = "+";
 }
 
+public class DichotomicOperation : Operation
+{ 
+    public override MoleculeType Type { get; } = MoleculeType.DICHOTOMIC_OPERATION;
+    public Operation? Pre { get; set; }
+    public Operation? Post { get; set; }
+    public string DichoOperator { get; set; } = "==";
+    public bool Negated { get; set; } = false;
+}
+
 public class Element : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT;
     public string? Symbol { get; set; }
+    public bool DichoNegated { get; set; } = false;
 }
 
 public class Property : Operation
@@ -66,6 +78,13 @@ public class ExplicitMagnitude : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
     public double Magnitude { get; set; } = 0;
+}
+
+public class ExplicitDicho : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_DICHO;
+
+    public bool State { get; set; } = false;
 }
 
 public class ElementModification : Operation

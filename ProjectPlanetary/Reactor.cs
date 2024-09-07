@@ -6,6 +6,12 @@ public enum AtomType {
     MAGNITUDE,
     ELEMENT,
     EQUIVALENCE,
+    EXCEEDS,
+    EQUATES,
+    RECEDES, 
+    NEGATER,
+    CONJUNCTOR,
+    DISJUNCTOR,
     
     OPEN_ROUND_ENCLOSURE,
     CLOSE_ROUND_ENCLOSURE,
@@ -13,6 +19,9 @@ public enum AtomType {
     CLOSE_SQUARE_ENCLOSURE,
     OPEN_CURLED_ENCLOSURE,
     CLOSE_CURLED_ENCLOSURE,
+    DICHO_ENCLOSURE,
+    OPEN_ANGLED_ENCLOSURE,
+    CLOSE_ANGLED_ENCLOSURE,
     
     // MAGNITUDE_OPERATIONS,
     SIGMA_OPERATOR,
@@ -24,6 +33,11 @@ public enum AtomType {
     
     ELEMENT_SYNTHESIZER,
     ELEMENT_STABILIZER,
+    LAW_CREATOR,
+    LAW_VALIDATOR,
+    LAW_INVALIDATOR,
+    LAW_CYCLER,
+    LAW_ORBITER,
     
     DARK_MATTER,
     HORIZON
@@ -47,20 +61,34 @@ public static class Reactor
     {
         { "synth", AtomType.ELEMENT_SYNTHESIZER },
         { "stable", AtomType.ELEMENT_STABILIZER },
+        { "law", AtomType.LAW_CREATOR },
+        { "valid", AtomType.LAW_VALIDATOR },
+        { "invalid", AtomType.LAW_INVALIDATOR },
+        { "cycle", AtomType.LAW_CYCLER },
+        { "orbit", AtomType.LAW_ORBITER},
         // { "vacuum", AtomType.VACUUM }
     };
 
     private const string Isotope = @"(?<MAGNITUDE>\d+)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
+                                   + @"(?<CONJUNCTOR>\.\.)|"
+                                   + @"(?<DISJUNCTOR>\+\+)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
+                                   + @"(?<EQUATES>\=\=)|"
                                    + @"(?<EQUIVALENCE>\=)|"
+                                   + @"(?<EXCEEDS>\>\>)|"
+                                   + @"(?<RECEDES>\<\<)|"
+                                   + @"(?<NEGATER>\!)|"
+                                   + @"(?<DICHO_ENCLOSURE>\|)|"
                                    + @"(?<OPEN_ROUND_ENCLOSURE>\()|"
                                    + @"(?<CLOSE_ROUND_ENCLOSURE>\))|"
                                    + @"(?<OPEN_SQUARE_ENCLOSURE>\[)|"
                                    + @"(?<CLOSE_SQUARE_ENCLOSURE>\])|"
                                    + @"(?<OPEN_CURLED_ENCLOSURE>\{)|"
                                    + @"(?<CLOSE_CURLED_ENCLOSURE>\})|"
+                                   + @"(?<OPEN_ANGLED_ENCLOSURE>\<)|"
+                                   + @"(?<CLOSE_ANGLED_ENCLOSURE>\>)|"
                                    + @"(?<POLE>\;)|"
                                    + @"(?<SEPARATOR>\,)|"
                                    + @"(?<CONDUIT>\:)|"

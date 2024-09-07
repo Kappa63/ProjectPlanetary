@@ -27,11 +27,11 @@ public class ExplicitFormedMagnitude : ExplicitFormation
 public class ExplicitFormedDicho : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.DICHO;
-    public bool state { get; set; } = false;
+    public bool State { get; set; } = false;
 }
 
 public class ExplicitFormedAlloy : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.ALLOY;
-    public Dictionary<string, ExplicitFormation> properties { get; set; } = new Dictionary<string, ExplicitFormation>();
+    public Dictionary<string, ExplicitFormation> Properties { get; set; } = new Dictionary<string, ExplicitFormation>();
 }

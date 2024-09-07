@@ -18,8 +18,8 @@ public class Space
 
     private void bigBang()
     {
-        this.synthesizeElement("True", new ExplicitFormedDicho() { state = true }, true);
-        this.synthesizeElement("False", new ExplicitFormedDicho() { state = false }, true);
+        this.synthesizeElement("True", new ExplicitFormedDicho() { State = true }, true);
+        this.synthesizeElement("False", new ExplicitFormedDicho() { State = false }, true);
         this.synthesizeElement("Vacuum", new ExplicitFormedVacuum(), true);
     }
 
