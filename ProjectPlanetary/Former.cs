@@ -60,9 +60,6 @@ public class Former
                 State = !((form as ExplicitFormedDicho)!.State)
             }:(form as ExplicitFormedDicho)!
         };
-        Console.WriteLine(form.Type);
-        Console.WriteLine(negation);
-        Console.WriteLine(JsonSerializer.Serialize(x));
 
         return x;
     }

@@ -21,13 +21,13 @@ public class ExplicitFormedVacuum : ExplicitFormation
 public class ExplicitFormedMagnitude : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.MAGNITUDE;
-    public double Magnitude { get; set; } = 0;
+    public double Magnitude { get; init; }
 }
 
 public class ExplicitFormedDicho : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.DICHO;
-    public bool State { get; set; } = false;
+    public bool State { get; init; }
 }
 
 public class ExplicitFormedAlloy : ExplicitFormation

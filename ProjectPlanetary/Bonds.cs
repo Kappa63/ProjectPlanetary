@@ -23,15 +23,15 @@ public abstract class Molecule
 public class Compound : Molecule
 {
     public override MoleculeType Type { get; } = MoleculeType.COMPOUND;
-    public List<Molecule> Molecules { get; set; } = new List<Molecule>(); 
+    public List<Molecule> Molecules { get; init; } = new List<Molecule>(); 
 }
 
 public class ElementSynthesis : Molecule
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT_SYNTHESIS;
-    public bool? Stable { get; set; }
-    public string? Symbol { get; set; }
-    public Operation? Magnitude { get; set; } = null;
+    public bool? Stable { get; init; }
+    public string? Symbol { get; init; }
+    public Operation? Magnitude { get; init; }
 }
 
 public abstract class Operation : Molecule { }
@@ -39,59 +39,60 @@ public abstract class Operation : Molecule { }
 public class MagnitudinalOperation : Operation
 { 
     public override MoleculeType Type { get; } = MoleculeType.MAGNITUDINAL_OPERATION;
-    public Operation? Pre { get; set; }
-    public Operation? Post { get; set; }
-    public string MagnitudeOperator { get; set; } = "+";
+    public Operation? Pre { get; init; }
+    public Operation? Post { get; init; }
+    public string MagnitudeOperator { get; init; } = "+";
 }
 
 public class DichotomicOperation : Operation
 { 
     public override MoleculeType Type { get; } = MoleculeType.DICHOTOMIC_OPERATION;
-    public Operation? Pre { get; set; }
-    public Operation? Post { get; set; }
-    public string DichoOperator { get; set; } = "==";
+    public Operation? Pre { get; init; }
+    public Operation? Post { get; init; }
+    public string DichoOperator { get; init; } = "==";
     public bool Negated { get; set; } = false;
+    
 }
 
 public class Element : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT;
-    public string? Symbol { get; set; }
-    public bool DichoNegated { get; set; } = false;
+    public string? Symbol { get; init; }
+    public bool DichoNegated { get; init; }
 }
 
 public class Property : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.PROPERTY;
-    public string? Symbol { get; set; }
-    public Operation? Magnitude { get; set; } = null;
+    public string? Symbol { get; init; }
+    public Operation? Magnitude { get; init; }
 }
 
 public class ExplicitAlloy : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_ALLOY;
-    public List<Property> Properties { get; set; } = new List<Property>();
+    public List<Property> Properties { get; init; } = new List<Property>();
 }
 
 public class ExplicitMagnitude : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
-    public double Magnitude { get; set; } = 0;
+    public double Magnitude { get; init; }
 }
 
 public class ExplicitDicho : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_DICHO;
 
-    public bool State { get; set; } = false;
+    public bool State { get; init; }
 }
 
 public class ElementModification : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT_MODIFICATION;
-    public Operation? Element { get; set; }
-    public Operation? Magnitude { get; set; }
+    public Operation? Element { get; init; }
+    public Operation? Magnitude { get; init; }
 }
 
 // public class ExplicitVacuum : Operation
