@@ -5,9 +5,14 @@ public enum MoleculeType
     COMPOUND,
     ELEMENT_SYNTHESIS,
     ELEMENT_MODIFICATION,
+    
+    ALLOY_TRAJECTORY_OPERATION,
+    VOYAGE_OPERATION,
+    
     EXPLICIT_MAGNITUDE,
     EXPLICIT_DICHO,
     // EXPLICIT_VACUUM,
+    
     ELEMENT,
     PROPERTY,
     EXPLICIT_ALLOY,
@@ -42,6 +47,7 @@ public class MagnitudinalOperation : Operation
     public Operation? Pre { get; init; }
     public Operation? Post { get; init; }
     public string MagnitudeOperator { get; init; } = "+";
+    public bool Dichotomous { get; set; } = false;
 }
 
 public class DichotomicOperation : Operation
@@ -50,7 +56,7 @@ public class DichotomicOperation : Operation
     public Operation? Pre { get; init; }
     public Operation? Post { get; init; }
     public string DichoOperator { get; init; } = "==";
-    public bool Negated { get; set; } = false;
+    public bool Negated { get; init; }
     
 }
 
@@ -66,6 +72,21 @@ public class Property : Operation
     public override MoleculeType Type { get; } = MoleculeType.PROPERTY;
     public string? Symbol { get; init; }
     public Operation? Magnitude { get; init; }
+}
+
+public class VoyageOperation : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.VOYAGE_OPERATION;
+    public List<Operation> Payload { get; init; } = new List<Operation>();
+    public Operation? Origin { get; init; }
+}
+
+public class AlloyTrajectoryOperation : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.ALLOY_TRAJECTORY_OPERATION;
+    public Operation? Alloy { get; init; }
+    public Operation? Property { get; init; }
+    public bool? Calculated { get; init; }
 }
 
 public class ExplicitAlloy : Operation

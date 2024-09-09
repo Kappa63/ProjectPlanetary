@@ -1,6 +1,3 @@
-using System.Text.Json;
-
-#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 namespace ProjectPlanetary;
 
 public class Former
@@ -10,12 +7,10 @@ public class Former
         ExplicitFormation finalFormation = new ExplicitFormedVacuum();
         
         // foreach (Molecule mol in compound.Molecules)
-        //     Console.WriteLine(JsonSerializer.Serialize(mol as Element));
+        //     Console.WriteLine(JsonSerializer.Serialize(mol));
 
         foreach (Molecule mol in compound.Molecules)
-        {
             finalFormation = formMolecule(mol, sp);
-        }
         return finalFormation;
     }
 
@@ -41,9 +36,8 @@ public class Former
     {
         ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
         ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
-
         if (preFormation.Type != ExplicitType.VACUUM && postFormation.Type != ExplicitType.VACUUM)
-            return formExplicitDichotomicOperation(RetrieveExplicitDicho(preFormation), RetrieveExplicitDicho(postFormation), operation.DichoOperator, operation.Negated);
+            return RetrieveExplicitDicho(formExplicitDichotomicOperation(RetrieveExplicitDicho(preFormation), RetrieveExplicitDicho(postFormation), operation.DichoOperator, operation.Negated));
         return new ExplicitFormedVacuum();
     }
     
@@ -68,8 +62,8 @@ public class Former
     {
         bool dichoFormed = operation switch
         {
-            ".." => pre.State && post.State,
-            "++" => pre.State || post.State,
+            "and" => pre.State && post.State,
+            "or" => pre.State || post.State,
             _ => throw new InvalidOperationException("Invalid operator")
         };
         return new ExplicitFormedDicho()
@@ -84,9 +78,10 @@ public class Former
         ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
         ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
 
-        if (preFormation.Type != ExplicitType.VACUUM && postFormation.Type != ExplicitType.VACUUM)
-            return formExplicitMagnitudinalOperation(retrieveExplicitMagnitude(preFormation), retrieveExplicitMagnitude(postFormation), operation.MagnitudeOperator);
-        return new ExplicitFormedVacuum();
+        if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
+            return new ExplicitFormedVacuum();
+        ExplicitFormation tempMag = formExplicitMagnitudinalOperation(retrieveExplicitMagnitude(preFormation), retrieveExplicitMagnitude(postFormation), operation.MagnitudeOperator);
+        return operation.Dichotomous?this.RetrieveExplicitDicho(tempMag):tempMag;
     }
 
     private static ExplicitFormedMagnitude retrieveExplicitMagnitude(ExplicitFormation form)

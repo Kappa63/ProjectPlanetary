@@ -222,11 +222,11 @@ public class Bonder
 
     private Operation bondJunctionOperation(bool negateState = false)
     {
-        Operation preNegateOperation = this.bondGeneralDichotomicOperation();
+        Operation preNegateOperation = this.dichotomizeMagnitude((this.bondMagnitudinalOperation() as MagnitudinalOperation)!);
         while (this.retrieveAtom(false).Type == AtomType.CONJUNCTOR)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postGeneralOperation = this.bondGeneralDichotomicOperation();
+            Operation postGeneralOperation = this.dichotomizeMagnitude((this.bondMagnitudinalOperation() as MagnitudinalOperation)!);
             preNegateOperation = new DichotomicOperation()
             {
                 Pre = preNegateOperation,
@@ -239,6 +239,12 @@ public class Bonder
         return preNegateOperation;
     }
 
+    private Operation dichotomizeMagnitude(MagnitudinalOperation magnitudeOperation)
+    {
+        magnitudeOperation.Dichotomous = true;
+        return magnitudeOperation;
+    }
+    
     // private Operation bondNegateOperation()
     // {
     //     if (this.retrieveAtom(false).Type != AtomType.NEGATER)
@@ -280,12 +286,54 @@ public class Bonder
         }
     }
 
+    private Operation bondVoyageTrajectoryOperation()
+    {
+        Operation trajectory = this.bondTrajectoryOperation();
+
+        if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
+        {
+            return this.bondVoyageOperation(trajectory);
+        }
+
+        return trajectory;
+    }
+
+    private Operation bondVoyageOperation(Operation trajectory)
+    {
+        Operation tempVoyage = new VoyageOperation()
+        {
+            Origin = trajectory,
+            Payload = this.bondVoyagePayload()
+        };
+        if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
+            tempVoyage = this.bondVoyageOperation(tempVoyage);
+
+        // do
+        // {
+        //     
+        // } while (expression);
+        return tempVoyage;
+    }
+
+    private Operation bondTrajectoryOperation()
+    {   
+        return new AlloyTrajectoryOperation();
+    }
+
+    private List<Operation> bondVoyagePayload()
+    {
+        List<Operation> payloads = new List<Operation>();
+        return payloads;
+    }
+    
     private Operation bondGeneralMagnitudinalOperation()
     {
         AtomType atomT = this.retrieveAtom(false).Type;
 
         switch (atomT)
         {
+            case AtomType.NEGATER:
+                return this.bondGeneralDichotomicOperation();
             case AtomType.ELEMENT:
                 return new Element() { Symbol = this.retrieveAtom(true).Value };
             case AtomType.MAGNITUDE:

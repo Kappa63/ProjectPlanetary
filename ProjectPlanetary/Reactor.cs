@@ -61,6 +61,8 @@ public static class Reactor
     {
         { "synth", AtomType.ELEMENT_SYNTHESIZER },
         { "stable", AtomType.ELEMENT_STABILIZER },
+        { "or", AtomType.DISJUNCTOR },
+        { "and", AtomType.CONJUNCTOR },
         { "law", AtomType.LAW_CREATOR },
         { "valid", AtomType.LAW_VALIDATOR },
         { "invalid", AtomType.LAW_INVALIDATOR },
@@ -71,8 +73,6 @@ public static class Reactor
 
     private const string Isotope = @"(?<MAGNITUDE>\d+)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
-                                   + @"(?<CONJUNCTOR>\.\.)|"
-                                   + @"(?<DISJUNCTOR>\+\+)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
                                    + @"(?<EQUATES>\=\=)|"
