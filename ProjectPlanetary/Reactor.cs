@@ -28,6 +28,7 @@ public enum AtomType {
     PI_OPERATOR,
     
     CONDUIT,
+    LINKER,
     SEPARATOR,
     POLE,
     
@@ -92,6 +93,7 @@ public static class Reactor
                                    + @"(?<POLE>\;)|"
                                    + @"(?<SEPARATOR>\,)|"
                                    + @"(?<CONDUIT>\:)|"
+                                   + @"(?<LINKER>\.)|"
                                    + @"\s+|"
                                    + "(?<DARK_MATTER>.)";
 

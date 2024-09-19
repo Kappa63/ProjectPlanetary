@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace ProjectPlanetary;
 
 public class Former
@@ -28,6 +30,7 @@ public class Former
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
             MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
+            MoleculeType.ALLOY_TRAJECTORY_OPERATION => this.retrieveAlloyTrajectory((mol as AlloyTrajectoryOperation)!, sp),
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
         };
     }
@@ -74,7 +77,6 @@ public class Former
 
     private ExplicitFormation formMagnitudinalOperation(MagnitudinalOperation operation, Space sp)
     {
-
         ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
         ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
 
@@ -127,7 +129,7 @@ public class Former
             formedAlloy.Properties.Add(p.Symbol!, p.Magnitude!=null?this.formMolecule(p.Magnitude, sp):new ExplicitFormedVacuum()); //sp.retrieveElement(p.Symbol!)
         return formedAlloy;
     }
-
+    
     private ExplicitFormation retrieveElement(Element element, Space sp)
     {
         ExplicitFormation tempFormation = sp.retrieveElement(element.Symbol!);
@@ -137,5 +139,15 @@ public class Former
     private ExplicitFormation formElement(ElementSynthesis element, Space sp)
     {
         return sp.synthesizeElement(element.Symbol!, element.Magnitude!=null?this.formMolecule(element.Magnitude, sp):new ExplicitFormedVacuum(), element.Stable!.Value);
+    }
+
+    private ExplicitFormation retrieveAlloyTrajectory(AlloyTrajectoryOperation alloy, Space sp)
+    {
+        if (alloy.Alloy!.Type != MoleculeType.ELEMENT) throw new NotImplementedException("Can only modify simple elements.");
+        ExplicitFormedAlloy tempAlloy = (this.retrieveElement((alloy.Alloy as Element)!, sp) as ExplicitFormedAlloy)!;
+        string propName = (alloy.Property as Element)!.Symbol!;
+        if (tempAlloy.Properties.TryGetValue(propName, out var trajectory))
+            return trajectory;
+        throw new ArgumentException($"Property {propName} not found in alloy");
     }
 }

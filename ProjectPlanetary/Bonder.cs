@@ -1,4 +1,6 @@
 // using System.Text.Json;
+
+using System.Text.Json;
 using Microsoft.VisualBasic.FileIO;
 
 namespace ProjectPlanetary;
@@ -190,7 +192,7 @@ public class Bonder
     private Operation bondDichotomicOperation()
     {   
         if (this.retrieveAtom(false).Type != AtomType.DICHO_ENCLOSURE)
-            return this.bondGeneralMagnitudinalOperation();
+            return this.bondVoyageTrajectoryOperation();
         this.retrieveAtom(true);
         Operation tempDichoOp = this.bondDisjunctionOperation();
         this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
@@ -222,11 +224,11 @@ public class Bonder
 
     private Operation bondJunctionOperation(bool negateState = false)
     {
-        Operation preNegateOperation = this.dichotomizeMagnitude((this.bondMagnitudinalOperation() as MagnitudinalOperation)!);
+        Operation preNegateOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
         while (this.retrieveAtom(false).Type == AtomType.CONJUNCTOR)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postGeneralOperation = this.dichotomizeMagnitude((this.bondMagnitudinalOperation() as MagnitudinalOperation)!);
+            Operation postGeneralOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
             preNegateOperation = new DichotomicOperation()
             {
                 Pre = preNegateOperation,
@@ -239,9 +241,20 @@ public class Bonder
         return preNegateOperation;
     }
 
-    private Operation dichotomizeMagnitude(MagnitudinalOperation magnitudeOperation)
+    private Operation dichotomizeMagnitude(Operation magnitudeOperation)
     {
-        magnitudeOperation.Dichotomous = true;
+        if (magnitudeOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
+            return new ExplicitDicho()
+            {
+                State = (magnitudeOperation as ExplicitMagnitude)!.Magnitude != 0,
+            };
+        if (magnitudeOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
+        {
+            MagnitudinalOperation tempMag = (magnitudeOperation as MagnitudinalOperation)!;
+            tempMag.Dichotomous = true;
+            return tempMag;
+        }
+
         return magnitudeOperation;
     }
     
@@ -290,12 +303,7 @@ public class Bonder
     {
         Operation trajectory = this.bondTrajectoryOperation();
 
-        if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
-        {
-            return this.bondVoyageOperation(trajectory);
-        }
-
-        return trajectory;
+        return this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE ? this.bondVoyageOperation(trajectory) : trajectory;
     }
 
     private Operation bondVoyageOperation(Operation trajectory)
@@ -305,24 +313,54 @@ public class Bonder
             Origin = trajectory,
             Payload = this.bondVoyagePayload()
         };
-        if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
-            tempVoyage = this.bondVoyageOperation(tempVoyage);
+        
+        while (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
+            tempVoyage = new VoyageOperation()
+            {
+                Origin = tempVoyage,
+                Payload = this.bondVoyagePayload()
+            };
 
-        // do
-        // {
-        //     
-        // } while (expression);
         return tempVoyage;
     }
 
     private Operation bondTrajectoryOperation()
-    {   
-        return new AlloyTrajectoryOperation();
+    {
+        Operation alloy = this.bondGeneralMagnitudinalOperation();
+        while (this.retrieveAtom(false).Type == AtomType.LINKER) // or this.retrieveAtom(false).Type == AtomType.OPEN_SQUARE_ENCLOSURE
+        {
+            Atom curAtom = this.retrieveAtom(true);
+            
+            Operation alloyProperty = this.bondGeneralMagnitudinalOperation();
+
+            if (alloyProperty.Type != MoleculeType.ELEMENT)
+                throw new MalformedLineException("Expected Element");
+            // Console.WriteLine((alloyProperty as Element)!.Symbol);
+            alloy = new AlloyTrajectoryOperation()
+            {
+                Alloy = alloy,
+                Property = alloyProperty,
+            };
+        }
+        // Console.WriteLine(JsonSerializer.Serialize(alloy as AlloyTrajectoryOperation));
+        return alloy;
     }
 
     private List<Operation> bondVoyagePayload()
     {
+        this.retrieveAtom(true, AtomType.OPEN_ROUND_ENCLOSURE);
         List<Operation> payloads = new List<Operation>();
+        if (this.retrieveAtom(false).Type != AtomType.CLOSE_ROUND_ENCLOSURE)
+        {
+            bool skipSep = true;
+            do
+            {
+                if (!skipSep) this.retrieveAtom(true);
+                payloads.Add(this.bondModificationOperation());
+                skipSep = false;
+            } while (this.retrieveAtom(false).Type == AtomType.SEPARATOR);
+        }
+        this.retrieveAtom(true, AtomType.CLOSE_ROUND_ENCLOSURE);
         return payloads;
     }
     

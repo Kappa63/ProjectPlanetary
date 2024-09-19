@@ -86,7 +86,7 @@ public class AlloyTrajectoryOperation : Operation
     public override MoleculeType Type { get; } = MoleculeType.ALLOY_TRAJECTORY_OPERATION;
     public Operation? Alloy { get; init; }
     public Operation? Property { get; init; }
-    public bool? Calculated { get; init; }
+    // public bool? Calculated { get; init; }
 }
 
 public class ExplicitAlloy : Operation
@@ -100,6 +100,7 @@ public class ExplicitMagnitude : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
     public double Magnitude { get; init; }
+    public bool Dichotomous { get; set; } = false;
 }
 
 public class ExplicitDicho : Operation
