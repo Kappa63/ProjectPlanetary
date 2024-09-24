@@ -11,13 +11,15 @@ public enum MoleculeType
     
     EXPLICIT_MAGNITUDE,
     EXPLICIT_DICHO,
+    EXPLICIT_TEXT,
     // EXPLICIT_VACUUM,
-    
+        
     ELEMENT,
     PROPERTY,
     EXPLICIT_ALLOY,
     MAGNITUDINAL_OPERATION,
     DICHOTOMIC_OPERATION,
+    TEXT_OPERATION
 }
 
 public abstract class Molecule
@@ -65,6 +67,7 @@ public class Element : Operation
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT;
     public string? Symbol { get; init; }
     public bool DichoNegated { get; init; }
+    public bool Dichotomous { get; set; } = false;
 }
 
 public class Property : Operation
@@ -78,7 +81,7 @@ public class VoyageOperation : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.VOYAGE_OPERATION;
     public List<Operation> Payload { get; init; } = new List<Operation>();
-    public Operation? Origin { get; init; }
+    public Operation? Planet { get; init; }
 }
 
 public class AlloyTrajectoryOperation : Operation
@@ -100,7 +103,15 @@ public class ExplicitMagnitude : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
     public double Magnitude { get; init; }
-    public bool Dichotomous { get; set; } = false;
+    // public bool Dichotomous { get; set; } = false;
+}
+
+public class ExplicitText : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_TEXT;
+
+    public string? Text { get; init; }
+    // public bool Dichotomous { get; set; } = false;
 }
 
 public class ExplicitDicho : Operation

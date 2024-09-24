@@ -18,21 +18,25 @@ internal static class ProjectPlanetary
         //     Console.WriteLine(atom.Type);
         // }   
         
-        while (true)
-        {
-            Console.Write(">> ");
-            string? system = Console.ReadLine();
-            if (system == null) continue;
-            if (system.Contains("exit")) Environment.Exit(0);
-            Compound comp = bonder.bondCompound(system);
-            ExplicitFormation frm = former.formCompound(comp, space);
-            Console.WriteLine(frm.Type switch
-            {
-                ExplicitType.MAGNITUDE=>JsonSerializer.Serialize(frm as ExplicitFormedMagnitude),
-                ExplicitType.DICHO=>JsonSerializer.Serialize(frm as ExplicitFormedDicho),
-                ExplicitType.ALLOY=>JsonSerializer.Serialize(frm as ExplicitFormedAlloy),
-                _=>JsonSerializer.Serialize(frm as ExplicitFormedVacuum)
-            });
-        }
+        // while (true)
+        // {
+        //     Console.Write(">> ");
+        //     string? system = Console.ReadLine();
+        //     if (system == null) continue;
+        //     if (system.Contains("exit")) Environment.Exit(0);
+        //     Compound comp = bonder.bondCompound(system);
+        //     ExplicitFormation frm = former.formCompound(comp, space);
+        //     Console.WriteLine(frm.Type switch
+        //     {
+        //         ExplicitType.MAGNITUDE=>JsonSerializer.Serialize(frm as ExplicitFormedMagnitude),
+        //         ExplicitType.DICHO=>JsonSerializer.Serialize(frm as ExplicitFormedDicho),
+        //         ExplicitType.ALLOY=>JsonSerializer.Serialize(frm as ExplicitFormedAlloy),
+        //         _=>JsonSerializer.Serialize(frm as ExplicitFormedVacuum)
+        //     });
+        // }
+
+        string c = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/src.ps");
+        former.formCompound(bonder.bondCompound(c), space);
+        return;
     }
 }

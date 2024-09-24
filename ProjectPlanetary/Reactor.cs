@@ -23,6 +23,8 @@ public enum AtomType {
     OPEN_ANGLED_ENCLOSURE,
     CLOSE_ANGLED_ENCLOSURE,
     
+    TEXT_CONTAINER,
+    
     // MAGNITUDE_OPERATIONS,
     SIGMA_OPERATOR,
     PI_OPERATOR,
@@ -90,6 +92,7 @@ public static class Reactor
                                    + @"(?<CLOSE_CURLED_ENCLOSURE>\})|"
                                    + @"(?<OPEN_ANGLED_ENCLOSURE>\<)|"
                                    + @"(?<CLOSE_ANGLED_ENCLOSURE>\>)|"
+                                   + "(?<TEXT_CONTAINER>\\\")|"
                                    + @"(?<POLE>\;)|"
                                    + @"(?<SEPARATOR>\,)|"
                                    + @"(?<CONDUIT>\:)|"

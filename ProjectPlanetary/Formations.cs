@@ -5,7 +5,9 @@ public enum ExplicitType
     VACUUM,
     MAGNITUDE,
     DICHO,
-    ALLOY
+    TEXT,
+    ALLOY,
+    PRIME_PLANET
 }
 
 public abstract class ExplicitFormation
@@ -24,6 +26,12 @@ public class ExplicitFormedMagnitude : ExplicitFormation
     public double Magnitude { get; init; }
 }
 
+public class ExplicitFormedText : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.TEXT;
+    public string? Text { get; init; }
+}
+
 public class ExplicitFormedDicho : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.DICHO;
@@ -34,4 +42,12 @@ public class ExplicitFormedAlloy : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.ALLOY;
     public Dictionary<string, ExplicitFormation> Properties { get; set; } = new Dictionary<string, ExplicitFormation>();
+}
+
+// public delegate ExplicitFormation PlanetTrajectory(ExplicitFormation[] args, Space sp);
+
+public class ExplicitFormedPrimePlanet : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.PRIME_PLANET;
+    public Func<List<ExplicitFormation>, Space, ExplicitFormation>? Voyage { get; init; }    
 }

@@ -22,7 +22,9 @@ public class Former
         {
             MoleculeType.EXPLICIT_MAGNITUDE => new ExplicitFormedMagnitude(){Magnitude = (mol as ExplicitMagnitude)!.Magnitude},
             MoleculeType.EXPLICIT_DICHO => new ExplicitFormedDicho(){State = (mol as ExplicitDicho)!.State},
+            MoleculeType.EXPLICIT_TEXT => new ExplicitFormedText(){Text = (mol as ExplicitText)!.Text},
             // MoleculeType.EXPLICIT_VACUUM => new ExplicitFormedVacuum(),
+            MoleculeType.VOYAGE_OPERATION => this.formPlanetaryVoyage((mol as VoyageOperation)!, sp),
             MoleculeType.MAGNITUDINAL_OPERATION => this.formMagnitudinalOperation((mol as MagnitudinalOperation)!, sp),
             MoleculeType.ELEMENT => retrieveElement((mol as Element)!, sp),
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
@@ -56,6 +58,7 @@ public class Former
             {
                 State = !((form as ExplicitFormedDicho)!.State)
             }:(form as ExplicitFormedDicho)!
+            
         };
 
         return x;
@@ -133,7 +136,7 @@ public class Former
     private ExplicitFormation retrieveElement(Element element, Space sp)
     {
         ExplicitFormation tempFormation = sp.retrieveElement(element.Symbol!);
-        return element.DichoNegated?this.RetrieveExplicitDicho(tempFormation, true):tempFormation;
+        return element.DichoNegated?this.RetrieveExplicitDicho(tempFormation, true):element.Dichotomous?this.RetrieveExplicitDicho(tempFormation):tempFormation;
     }
     
     private ExplicitFormation formElement(ElementSynthesis element, Space sp)
@@ -143,11 +146,22 @@ public class Former
 
     private ExplicitFormation retrieveAlloyTrajectory(AlloyTrajectoryOperation alloy, Space sp)
     {
-        if (alloy.Alloy!.Type != MoleculeType.ELEMENT) throw new NotImplementedException("Can only modify simple elements.");
-        ExplicitFormedAlloy tempAlloy = (this.retrieveElement((alloy.Alloy as Element)!, sp) as ExplicitFormedAlloy)!;
+        ExplicitFormedAlloy tempAlloy = (this.formMolecule(alloy.Alloy!, sp) as ExplicitFormedAlloy)!;
         string propName = (alloy.Property as Element)!.Symbol!;
         if (tempAlloy.Properties.TryGetValue(propName, out var trajectory))
             return trajectory;
         throw new ArgumentException($"Property {propName} not found in alloy");
+    }
+
+    private ExplicitFormation formPlanetaryVoyage(VoyageOperation voyage, Space sp)
+    {
+        List<ExplicitFormation> formedPayload  = voyage.Payload.ConvertAll(load => this.formMolecule(load, sp));
+        ExplicitFormation planet = this.formMolecule(voyage.Planet!, sp);
+
+        if (planet.Type != ExplicitType.PRIME_PLANET)
+            throw new NotImplementedException("ONLY PRIME PLANETS are implemented.");
+
+
+        return (planet as ExplicitFormedPrimePlanet)!.Voyage!(formedPayload, sp);
     }
 }

@@ -1,6 +1,3 @@
-// using System.Text.Json;
-
-using System.Text.Json;
 using Microsoft.VisualBasic.FileIO;
 
 namespace ProjectPlanetary;
@@ -26,6 +23,7 @@ public class Bonder
         while (this.checkHorizon())
         {
             compound.Molecules.Add(this.bondMolecule());
+            this.retrieveAtom(true, AtomType.POLE);
         }
 
         return compound;
@@ -190,13 +188,27 @@ public class Bonder
     }
     
     private Operation bondDichotomicOperation()
-    {   
-        if (this.retrieveAtom(false).Type != AtomType.DICHO_ENCLOSURE)
+    {
+        Atom curAtom = this.retrieveAtom(false);
+        if (curAtom.Type == AtomType.TEXT_CONTAINER)
+            return bondTextOperation();
+        if (curAtom.Type != AtomType.DICHO_ENCLOSURE)
             return this.bondVoyageTrajectoryOperation();
         this.retrieveAtom(true);
         Operation tempDichoOp = this.bondDisjunctionOperation();
         this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
         return tempDichoOp;
+    }
+
+    private Operation bondTextOperation()
+    {
+        this.retrieveAtom(true);
+        Atom tempAtom = this.retrieveAtom(true, AtomType.ELEMENT);
+        this.retrieveAtom(true, AtomType.TEXT_CONTAINER);
+        return new ExplicitText()
+        {
+            Text = tempAtom.Value
+        };
     }
 
     private Operation bondDisjunctionOperation(bool negateState = false)
@@ -224,6 +236,8 @@ public class Bonder
 
     private Operation bondJunctionOperation(bool negateState = false)
     {
+        // if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
+        //     return this.bondGeneralDichotomicOperation();
         Operation preNegateOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
         while (this.retrieveAtom(false).Type == AtomType.CONJUNCTOR)
         {
@@ -244,15 +258,24 @@ public class Bonder
     private Operation dichotomizeMagnitude(Operation magnitudeOperation)
     {
         if (magnitudeOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
+        {
             return new ExplicitDicho()
             {
                 State = (magnitudeOperation as ExplicitMagnitude)!.Magnitude != 0,
             };
+        }
+            
         if (magnitudeOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
         {
             MagnitudinalOperation tempMag = (magnitudeOperation as MagnitudinalOperation)!;
             tempMag.Dichotomous = true;
             return tempMag;
+        }
+        if (magnitudeOperation.Type == MoleculeType.ELEMENT)
+        {
+            Element tempElement = (magnitudeOperation as Element)!;
+            tempElement.Dichotomous = true;
+            return tempElement;
         }
 
         return magnitudeOperation;
@@ -310,14 +333,14 @@ public class Bonder
     {
         Operation tempVoyage = new VoyageOperation()
         {
-            Origin = trajectory,
+            Planet = trajectory,
             Payload = this.bondVoyagePayload()
         };
         
         while (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
             tempVoyage = new VoyageOperation()
             {
-                Origin = tempVoyage,
+                Planet = tempVoyage,
                 Payload = this.bondVoyagePayload()
             };
 
@@ -329,7 +352,8 @@ public class Bonder
         Operation alloy = this.bondGeneralMagnitudinalOperation();
         while (this.retrieveAtom(false).Type == AtomType.LINKER) // or this.retrieveAtom(false).Type == AtomType.OPEN_SQUARE_ENCLOSURE
         {
-            Atom curAtom = this.retrieveAtom(true);
+            // Atom curAtom =
+            this.retrieveAtom(true);
             
             Operation alloyProperty = this.bondGeneralMagnitudinalOperation();
 
@@ -379,6 +403,8 @@ public class Bonder
                 {
                     Magnitude = double.Parse(this.retrieveAtom(true).Value)
                 };
+            case AtomType.TEXT_CONTAINER:
+                
             // case AtomType.VACUUM:
             //     this.getAtom(true);
             //     return new ExplicitVacuum();
