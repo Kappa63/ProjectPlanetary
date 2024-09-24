@@ -1,5 +1,5 @@
 using Microsoft.VisualBasic.FileIO;
-
+using System.Text;
 namespace ProjectPlanetary;
 
 public class Bonder
@@ -203,11 +203,13 @@ public class Bonder
     private Operation bondTextOperation()
     {
         this.retrieveAtom(true);
-        Atom tempAtom = this.retrieveAtom(true, AtomType.ELEMENT);
+        List<string> tempText = new List<string>();
+        while (this.retrieveAtom(false).Type == AtomType.ELEMENT)
+            tempText.Add(this.retrieveAtom(true).Value);
         this.retrieveAtom(true, AtomType.TEXT_CONTAINER);
         return new ExplicitText()
         {
-            Text = tempAtom.Value
+            Text = string.Join(" ", tempText),
         };
     }
 
@@ -403,7 +405,6 @@ public class Bonder
                 {
                     Magnitude = double.Parse(this.retrieveAtom(true).Value)
                 };
-            case AtomType.TEXT_CONTAINER:
                 
             // case AtomType.VACUUM:
             //     this.getAtom(true);

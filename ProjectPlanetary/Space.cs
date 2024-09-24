@@ -24,23 +24,12 @@ public class Space
         this.synthesizeElement("False", new ExplicitFormedDicho() { State = false }, true);
         this.synthesizeElement("Vacuum", new ExplicitFormedVacuum(), true);
 
-        this.synthesizeElement("eject", new ExplicitFormedPrimePlanet()
+        this.synthesizeElement("eject", new ExplicitFormedAlloy()
         {
-            Voyage = (forms, sp) =>
+            Properties =
             {
-                foreach (ExplicitFormation form in forms)
-                {
-                    Console.WriteLine(form.Type switch
-                    {
-                        ExplicitType.MAGNITUDE=>JsonSerializer.Serialize(form as ExplicitFormedMagnitude),
-                        ExplicitType.DICHO=>JsonSerializer.Serialize(form as ExplicitFormedDicho),
-                        ExplicitType.ALLOY=>JsonSerializer.Serialize(form as ExplicitFormedAlloy),
-                        ExplicitType.TEXT=>JsonSerializer.Serialize(form as ExplicitFormedText),
-                        ExplicitType.PRIME_PLANET=>"{\"Type\":5,\"Atom\":PRIME_PLANET}",
-                        _=>JsonSerializer.Serialize(form as ExplicitFormedVacuum)
-                    }); 
-                }
-                return new ExplicitFormedVacuum();
+                {"out", Singularity.Systems.Eject.Planets.planetTrajectories["out"]},
+                {"debug", Singularity.Systems.Eject.Planets.planetTrajectories["debug"]},
             }
         }, true);
     }
