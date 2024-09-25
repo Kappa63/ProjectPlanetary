@@ -12,6 +12,7 @@ public enum AtomType {
     NEGATER,
     CONJUNCTOR,
     DISJUNCTOR,
+    NOTE,
     
     OPEN_ROUND_ENCLOSURE,
     CLOSE_ROUND_ENCLOSURE,
@@ -23,7 +24,7 @@ public enum AtomType {
     OPEN_ANGLED_ENCLOSURE,
     CLOSE_ANGLED_ENCLOSURE,
     
-    TEXT_CONTAINER,
+    TEXT,
     
     // MAGNITUDE_OPERATIONS,
     SIGMA_OPERATOR,
@@ -74,7 +75,8 @@ public static class Reactor
         // { "vacuum", AtomType.VACUUM }
     };
 
-    private const string Isotope = @"(?<MAGNITUDE>\d+)|"
+    private const string Isotope = "(?<TEXT>\\\".*\\\")|" // "(?<TEXT>(?<=\\\").*(?=\\\"))|"
+                                   + @"(?<MAGNITUDE>\d+)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
@@ -92,7 +94,6 @@ public static class Reactor
                                    + @"(?<CLOSE_CURLED_ENCLOSURE>\})|"
                                    + @"(?<OPEN_ANGLED_ENCLOSURE>\<)|"
                                    + @"(?<CLOSE_ANGLED_ENCLOSURE>\>)|"
-                                   + "(?<TEXT_CONTAINER>\\\")|"
                                    + @"(?<POLE>\;)|"
                                    + @"(?<SEPARATOR>\,)|"
                                    + @"(?<CONDUIT>\:)|"
@@ -104,7 +105,7 @@ public static class Reactor
     public static List<Atom> Fission(string system)
     {
         List<Atom> atoms = new List<Atom>();
-        MatchCollection matches = Regex.Matches(system, Isotope);
+        MatchCollection matches = Regex.Matches(Regex.Replace(system, "(?<NOTE>//.*\n)|", ""), Isotope);
         int compoundNumber = 1;
         int atomNumber = 0;
         foreach (Match match in matches)

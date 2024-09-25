@@ -6,7 +6,7 @@ public class Bonder
 {
     private List<Atom> Atoms = new List<Atom>();
 
-    public Compound bondCompound(string system)
+    public Compound bondCompounds(string system)
     {
         this.Atoms = Reactor.Fission(system);
         //
@@ -190,8 +190,13 @@ public class Bonder
     private Operation bondDichotomicOperation()
     {
         Atom curAtom = this.retrieveAtom(false);
-        if (curAtom.Type == AtomType.TEXT_CONTAINER)
-            return bondTextOperation();
+        // if (curAtom.Type == AtomType.NOTE)
+        //     this.retrieveAtom(true);
+        if (curAtom.Type == AtomType.TEXT)
+        {
+            this.retrieveAtom(true);
+            return new ExplicitText(){Text = curAtom.Value}; // .Trim('"')
+        }
         if (curAtom.Type != AtomType.DICHO_ENCLOSURE)
             return this.bondVoyageTrajectoryOperation();
         this.retrieveAtom(true);
@@ -200,18 +205,18 @@ public class Bonder
         return tempDichoOp;
     }
 
-    private Operation bondTextOperation()
-    {
-        this.retrieveAtom(true);
-        List<string> tempText = new List<string>();
-        while (this.retrieveAtom(false).Type == AtomType.ELEMENT)
-            tempText.Add(this.retrieveAtom(true).Value);
-        this.retrieveAtom(true, AtomType.TEXT_CONTAINER);
-        return new ExplicitText()
-        {
-            Text = string.Join(" ", tempText),
-        };
-    }
+    // private Operation bondTextOperation()
+    // {
+    //     this.retrieveAtom(true);
+    //     List<string> tempText = new List<string>();
+    //     while (this.retrieveAtom(false).Type == AtomType.ELEMENT)
+    //         tempText.Add(this.retrieveAtom(true).Value);
+    //     this.retrieveAtom(true, AtomType.TEXT_CONTAINER);
+    //     return new ExplicitText()
+    //     {
+    //         Text = string.Join(" ", tempText),
+    //     };
+    // }
 
     private Operation bondDisjunctionOperation(bool negateState = false)
     {
