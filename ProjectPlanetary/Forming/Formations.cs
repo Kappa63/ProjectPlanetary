@@ -1,4 +1,6 @@
-namespace ProjectPlanetary;
+using ProjectPlanetary.Singularity;
+
+namespace ProjectPlanetary.Forming;
 
 public enum ExplicitType
 {

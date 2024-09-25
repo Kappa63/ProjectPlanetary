@@ -1,14 +1,13 @@
-using System.Text.Json;
+using ProjectPlanetary.Singularity;
 
 namespace ProjectPlanetary;
-
 internal static class ProjectPlanetary
 {
     public static void Main()
     {
-        Bonder bonder = new Bonder();
+        Bonding.Bonder bonder = new Bonding.Bonder();
         Space space = new Space();
-        Former former = new Former();
+        Forming.Former former = new Forming.Former();
         Console.WriteLine("\nPlanetary v0.07");
         
         // var Atoms = Reactor.Fission("synth x = |(True..0)++!True|"); // law ( a >> 20) valid cycle {x= {kol, <a:s>}}
@@ -37,6 +36,5 @@ internal static class ProjectPlanetary
 
         string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/src.ps");
         former.formCompound(bonder.bondCompounds(system), space);
-        return;
     }
 }

@@ -1,6 +1,7 @@
-using System.Text.Json;
+using ProjectPlanetary.Singularity;
+using ProjectPlanetary.Bonding;
 
-namespace ProjectPlanetary;
+namespace ProjectPlanetary.Forming;
 
 public class Former
 {

@@ -1,6 +1,6 @@
 using Microsoft.VisualBasic.FileIO;
 using System.Text;
-namespace ProjectPlanetary;
+namespace ProjectPlanetary.Bonding;
 
 public class Bonder
 {

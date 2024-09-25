@@ -1,4 +1,4 @@
-namespace ProjectPlanetary;
+namespace ProjectPlanetary.Bonding;
 
 public enum MoleculeType
 {

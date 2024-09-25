@@ -1,17 +1,17 @@
-using System.Text.Json;
+using ProjectPlanetary.Forming;
 
-namespace ProjectPlanetary;
+namespace ProjectPlanetary.Singularity;
 
 public class Space
 {
     private readonly Space? rootSpace;
     private readonly Dictionary<string, ExplicitFormation> elements;
     private readonly List<string> stabilized;
-    private readonly bool singularity;
+    // private readonly bool singularity;
 
     public Space(Space? rootSpace=null)
     {
-        singularity = (rootSpace == null);
+        bool singularity = (rootSpace == null);
         this.rootSpace = rootSpace;
         this.elements = new Dictionary<string, ExplicitFormation>();
         this.stabilized = new List<string>();
@@ -23,15 +23,8 @@ public class Space
         this.synthesizeElement("True", new ExplicitFormedDicho() { State = true }, true);
         this.synthesizeElement("False", new ExplicitFormedDicho() { State = false }, true);
         this.synthesizeElement("Vacuum", new ExplicitFormedVacuum(), true);
-
-        this.synthesizeElement("eject", new ExplicitFormedAlloy()
-        {
-            Properties =
-            {
-                {"out", Singularity.Systems.Eject.Planets.planetTrajectories["out"]},
-                {"debug", Singularity.Systems.Eject.Planets.planetTrajectories["debug"]},
-            }
-        }, true);
+        
+        Alloys.AlloyBuilder.expandPrimeAlloys(this);
     }
 
     public ExplicitFormation synthesizeElement(string elementName, ExplicitFormation exForm, bool stability)

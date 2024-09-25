@@ -7,4 +7,9 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Singularity\Dichos\" />
+      <Folder Include="Singularity\Magnitudes\" />
+    </ItemGroup>
+
 </Project>
