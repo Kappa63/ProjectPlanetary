@@ -8,7 +8,7 @@ internal static class ProjectPlanetary
         Bonding.Bonder bonder = new Bonding.Bonder();
         Space space = new Space();
         Forming.Former former = new Forming.Former();
-        Console.WriteLine("\nPlanetary v0.07");
+        Console.WriteLine("\nPlanetary v0.1");
         
         // var Atoms = Reactor.Fission("synth x = |(True..0)++!True|"); // law ( a >> 20) valid cycle {x= {kol, <a:s>}}
         //

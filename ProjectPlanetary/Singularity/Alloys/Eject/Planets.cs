@@ -52,7 +52,7 @@ public static class Planets
             ExplicitType.DICHO => (form as ExplicitFormedDicho)!.State ? "True" : "False",
             ExplicitType.ALLOY => "{" + string.Join(", ",
                 (form as ExplicitFormedAlloy)!.Properties.Select(prop => $"{prop.Key}:{getOutText(prop.Value)}")) + "}",
-            ExplicitType.TEXT => (form as ExplicitFormedText)!.Text!,
+            ExplicitType.TEXT => (form as ExplicitFormedText)!.Text!.Trim('"'),
             ExplicitType.PRIME_PLANET => "{\"Type\":5,\"Atom\":PRIME_PLANET}",
             _ => "VACUUM"
         };

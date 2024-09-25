@@ -1,3 +1,4 @@
+using ProjectPlanetary.Bonding;
 using ProjectPlanetary.Singularity;
 
 namespace ProjectPlanetary.Forming;
@@ -9,7 +10,8 @@ public enum ExplicitType
     DICHO,
     TEXT,
     ALLOY,
-    PRIME_PLANET
+    PRIME_PLANET,
+    PLANET
 }
 
 public abstract class ExplicitFormation
@@ -52,4 +54,13 @@ public class ExplicitFormedPrimePlanet : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.PRIME_PLANET;
     public Func<List<ExplicitFormation>, Space, ExplicitFormation>? Voyage { get; init; }    
+}
+
+public class ExplicitFormedPlanet : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.PLANET;
+    public string? Symbol { get; init; }
+    public List<string> PayloadSymbols { get; init; } = new List<string>();
+    public Space? PlanetSpace { get; init; }
+    public Compound? PlanetCompound { get; init; }
 }

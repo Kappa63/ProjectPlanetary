@@ -10,5 +10,47 @@
 // eject.out("ooooooooooooooooooooooooooooooooooo");
 // eject.debug(x);
 
-stable synth x = capture.text();
-eject.out(x);
+// synth planet printer(x){
+//     eject.out(x);
+// };
+
+// printer(9);
+
+synth planet add(a, b) {
+    a+b;
+};
+
+synth planet sub(a, b) {
+    a-b;
+};
+
+synth planet mul(a, b) {
+    a*b;
+};
+
+synth planet div(a, b) {
+    a/b;
+};
+
+synth planet rem(a, b) {
+    a%b;
+};
+
+synth planet calcResults(x, y) {
+    eject.out("TESTS FOR X=4 AND Y=3");
+    eject.out("Addition Result: ", add(x, y));
+    eject.out("Subtraction Result: ", sub(x, y));
+    eject.out("Multiplication Result: ", mul(x, y));
+    eject.out("Division Result: ", div(x, y));
+    eject.out("Remainder Result: ", rem(x, y));
+};
+
+synth x = 4;
+synth y = 3;
+calcResults(x, y);
+eject.out("======================");
+eject.out("Input Value for X: ");
+x = capture.magnitude();
+eject.out("Input Value for Y: ");
+y = capture.magnitude();
+calcResults(x, y);

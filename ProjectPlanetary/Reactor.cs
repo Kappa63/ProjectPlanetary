@@ -12,7 +12,6 @@ public enum AtomType {
     NEGATER,
     CONJUNCTOR,
     DISJUNCTOR,
-    NOTE,
     
     OPEN_ROUND_ENCLOSURE,
     CLOSE_ROUND_ENCLOSURE,
@@ -37,6 +36,7 @@ public enum AtomType {
     
     ELEMENT_SYNTHESIZER,
     ELEMENT_STABILIZER,
+    PLANET_SYNTHESIZER,
     LAW_CREATOR,
     LAW_VALIDATOR,
     LAW_INVALIDATOR,
@@ -65,6 +65,7 @@ public static class Reactor
     {
         { "synth", AtomType.ELEMENT_SYNTHESIZER },
         { "stable", AtomType.ELEMENT_STABILIZER },
+        { "planet", AtomType.PLANET_SYNTHESIZER},
         { "or", AtomType.DISJUNCTOR },
         { "and", AtomType.CONJUNCTOR },
         { "law", AtomType.LAW_CREATOR },

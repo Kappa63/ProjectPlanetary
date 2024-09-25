@@ -29,6 +29,7 @@ public class Former
             MoleculeType.MAGNITUDINAL_OPERATION => this.formMagnitudinalOperation((mol as MagnitudinalOperation)!, sp),
             MoleculeType.ELEMENT => retrieveElement((mol as Element)!, sp),
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
+            MoleculeType.PLANET_SYNTHESIS => formPlanet((mol as PlanetSynthesis)!, sp),
             MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
             MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
@@ -145,6 +146,17 @@ public class Former
         return sp.synthesizeElement(element.Symbol!, element.Magnitude!=null?this.formMolecule(element.Magnitude, sp):new ExplicitFormedVacuum(), element.Stable!.Value);
     }
 
+    private ExplicitFormation formPlanet(PlanetSynthesis planet, Space sp)
+    {
+        return sp.synthesizeElement(planet.Symbol!, new ExplicitFormedPlanet()
+        {
+            Symbol = planet.Symbol,
+            PayloadSymbols = planet.PayloadSymbols,
+            PlanetCompound = planet.Compound,
+            PlanetSpace = sp
+        }, true);
+    } 
+
     private ExplicitFormation retrieveAlloyTrajectory(AlloyTrajectoryOperation alloy, Space sp)
     {
         ExplicitFormedAlloy tempAlloy = (this.formMolecule(alloy.Alloy!, sp) as ExplicitFormedAlloy)!;
@@ -159,10 +171,18 @@ public class Former
         List<ExplicitFormation> formedPayload  = voyage.Payload.ConvertAll(load => this.formMolecule(load, sp));
         ExplicitFormation planet = this.formMolecule(voyage.Planet!, sp);
 
-        if (planet.Type != ExplicitType.PRIME_PLANET)
-            throw new NotImplementedException("ONLY PRIME PLANETS are implemented.");
-
-
-        return (planet as ExplicitFormedPrimePlanet)!.Voyage!(formedPayload, sp);
+        if (planet.Type == ExplicitType.PRIME_PLANET)
+            return (planet as ExplicitFormedPrimePlanet)!.Voyage!(formedPayload, sp);
+        if (planet.Type == ExplicitType.PLANET)
+        {
+            ExplicitFormedPlanet tempPlanet = (planet as ExplicitFormedPlanet)!;
+            Space planetSpace = new Space(tempPlanet.PlanetSpace);
+            if (formedPayload.Count != tempPlanet.PayloadSymbols.Count)
+                throw new ArgumentException("Payload is lacking elements.");
+            for (int i = 0; i < tempPlanet.PayloadSymbols.Count; i++)
+                planetSpace.synthesizeElement(tempPlanet.PayloadSymbols[i], formedPayload[i], false);
+            return this.formCompound(tempPlanet.PlanetCompound!, planetSpace);
+        }
+        throw new Exception("Can't call non-planet.");
     }
 }

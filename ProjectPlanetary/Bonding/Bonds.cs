@@ -4,6 +4,7 @@ public enum MoleculeType
 {
     COMPOUND,
     ELEMENT_SYNTHESIS,
+    PLANET_SYNTHESIS,
     ELEMENT_MODIFICATION,
     
     ALLOY_TRAJECTORY_OPERATION,
@@ -33,6 +34,14 @@ public class Compound : Molecule
     public List<Molecule> Molecules { get; init; } = new List<Molecule>(); 
 }
 
+public class PlanetSynthesis : Molecule
+{
+    public override MoleculeType Type { get; } = MoleculeType.PLANET_SYNTHESIS;
+    public string? Symbol {get; init; }
+    public Compound? Compound { get; init; }
+    public List<string> PayloadSymbols {get; init; } = new List<string>();
+}
+
 public class ElementSynthesis : Molecule
 {
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT_SYNTHESIS;
@@ -40,6 +49,7 @@ public class ElementSynthesis : Molecule
     public string? Symbol { get; init; }
     public Operation? Magnitude { get; init; }
 }
+
 
 public abstract class Operation : Molecule { }
 

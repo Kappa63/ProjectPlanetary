@@ -1,7 +1,6 @@
 using Microsoft.VisualBasic.FileIO;
-using System.Text;
-namespace ProjectPlanetary.Bonding;
 
+namespace ProjectPlanetary.Bonding;
 public class Bonder
 {
     private List<Atom> Atoms = new List<Atom>();
@@ -9,16 +8,8 @@ public class Bonder
     public Compound bondCompounds(string system)
     {
         this.Atoms = Reactor.Fission(system);
-        //
-        // foreach (var atom in this.Atoms)
-        // {
-        //     Console.WriteLine(atom.Type);
-        // }
 
-        Compound compound = new Compound()
-        {
-            Molecules = new List<Molecule>()
-        };
+        Compound compound = new Compound();
 
         while (this.checkHorizon())
         {
@@ -55,7 +46,9 @@ public class Bonder
 
     private Molecule bondElementSynthesis()
     {
-        bool elementalStability = this.retrieveAtom(true).Type == AtomType.ELEMENT_STABILIZER;
+        Atom tempAtom = this.retrieveAtom(true);
+        if (tempAtom.Type == AtomType.ELEMENT_SYNTHESIZER && this.retrieveAtom(false).Type == AtomType.PLANET_SYNTHESIZER) return this.bondPlanetSynthesis();
+        bool elementalStability = tempAtom.Type == AtomType.ELEMENT_STABILIZER;
         if (elementalStability) this.retrieveAtom(true, AtomType.ELEMENT_SYNTHESIZER);
         string elementalSymbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
 
@@ -75,10 +68,34 @@ public class Bonder
             Symbol = elementalSymbol,
             Magnitude = this.bondOperation()
         };
-
         // this.retrieveAtom(true, AtomType.POLE);
-
         return elementSynthesis;
+    }
+
+    private Molecule bondPlanetSynthesis()
+    {
+        this.retrieveAtom(true);
+        string tempSymbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
+        List<string> tempPayload = this.bondVoyagePayload().ConvertAll(load =>
+            load.Type == MoleculeType.ELEMENT
+                ? (load as Element)!.Symbol!
+                : throw new Exception("Expected Elements for Payload"));
+        this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
+        Compound planetCompound = new Compound();
+        Atom curAtom = this.retrieveAtom(false);
+        while (curAtom.Type != AtomType.HORIZON && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+        {
+            planetCompound.Molecules.Add(this.bondMolecule());
+            this.retrieveAtom(true, AtomType.POLE);
+            curAtom = this.retrieveAtom(false);
+        }
+        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
+        return new PlanetSynthesis()
+        {
+            Symbol = tempSymbol,
+            PayloadSymbols = tempPayload,
+            Compound = planetCompound
+        };
     }
 
     private Operation bondOperation()
@@ -190,8 +207,6 @@ public class Bonder
     private Operation bondDichotomicOperation()
     {
         Atom curAtom = this.retrieveAtom(false);
-        // if (curAtom.Type == AtomType.NOTE)
-        //     this.retrieveAtom(true);
         if (curAtom.Type == AtomType.TEXT)
         {
             this.retrieveAtom(true);
@@ -204,19 +219,6 @@ public class Bonder
         this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
         return tempDichoOp;
     }
-
-    // private Operation bondTextOperation()
-    // {
-    //     this.retrieveAtom(true);
-    //     List<string> tempText = new List<string>();
-    //     while (this.retrieveAtom(false).Type == AtomType.ELEMENT)
-    //         tempText.Add(this.retrieveAtom(true).Value);
-    //     this.retrieveAtom(true, AtomType.TEXT_CONTAINER);
-    //     return new ExplicitText()
-    //     {
-    //         Text = string.Join(" ", tempText),
-    //     };
-    // }
 
     private Operation bondDisjunctionOperation(bool negateState = false)
     {
@@ -235,9 +237,6 @@ public class Bonder
             };
         }
 
-        // DichotomicOperation temp = (preJunctionOperation as DichotomicOperation)!;
-        // temp.Negated = negateState;
-        // Console.WriteLine(JsonSerializer.Serialize(temp));
         return preJunctionOperation;
     }
 
@@ -287,14 +286,6 @@ public class Bonder
 
         return magnitudeOperation;
     }
-    
-    // private Operation bondNegateOperation()
-    // {
-    //     if (this.retrieveAtom(false).Type != AtomType.NEGATER)
-    //         return this.bondDisjunctionOperation(false);
-    //     this.retrieveAtom(true);
-    //     return this.bondDisjunctionOperation(true);
-    // }
     
     private Operation bondGeneralDichotomicOperation()
     {
@@ -366,14 +357,12 @@ public class Bonder
 
             if (alloyProperty.Type != MoleculeType.ELEMENT)
                 throw new MalformedLineException("Expected Element");
-            // Console.WriteLine((alloyProperty as Element)!.Symbol);
             alloy = new AlloyTrajectoryOperation()
             {
                 Alloy = alloy,
                 Property = alloyProperty,
             };
         }
-        // Console.WriteLine(JsonSerializer.Serialize(alloy as AlloyTrajectoryOperation));
         return alloy;
     }
 

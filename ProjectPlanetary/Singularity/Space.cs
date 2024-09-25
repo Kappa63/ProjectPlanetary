@@ -1,7 +1,6 @@
 using ProjectPlanetary.Forming;
 
 namespace ProjectPlanetary.Singularity;
-
 public class Space
 {
     private readonly Space? rootSpace;
