@@ -11,7 +11,8 @@ public enum ExplicitType
     TEXT,
     ALLOY,
     PRIME_PLANET,
-    PLANET
+    PLANET,
+    LAW
 }
 
 public abstract class ExplicitFormation
@@ -45,7 +46,7 @@ public class ExplicitFormedDicho : ExplicitFormation
 public class ExplicitFormedAlloy : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.ALLOY;
-    public Dictionary<string, ExplicitFormation> Properties { get; set; } = new Dictionary<string, ExplicitFormation>();
+    public Dictionary<string, ExplicitFormation> Properties { get; init; } = new Dictionary<string, ExplicitFormation>();
 }
 
 // public delegate ExplicitFormation PlanetTrajectory(ExplicitFormation[] args, Space sp);
@@ -63,4 +64,15 @@ public class ExplicitFormedPlanet : ExplicitFormation
     public List<string> PayloadSymbols { get; init; } = new List<string>();
     public Space? PlanetSpace { get; init; }
     public Compound? PlanetCompound { get; init; }
+}
+
+public class ExplicitFormedLaw : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.LAW;
+    public DichotomicOperation? LawDicho  { get; init; }
+    public Space? LawSpace { get; init; }
+    public bool Validator = true;
+    public bool Cycler = false;
+    public bool Orbiter = false;
+    public Compound? LawCompound { get; init; }
 }

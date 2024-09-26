@@ -5,6 +5,7 @@ public enum MoleculeType
     COMPOUND,
     ELEMENT_SYNTHESIS,
     PLANET_SYNTHESIS,
+    LAW_SYNTHESIS,
     ELEMENT_MODIFICATION,
     
     ALLOY_TRAJECTORY_OPERATION,
@@ -40,6 +41,16 @@ public class PlanetSynthesis : Molecule
     public string? Symbol {get; init; }
     public Compound? Compound { get; init; }
     public List<string> PayloadSymbols {get; init; } = new List<string>();
+}
+
+public class LawSynthesis : Molecule
+{
+    public override MoleculeType Type { get; } = MoleculeType.LAW_SYNTHESIS;
+    public DichotomicOperation? LawDicho  { get; init; }
+    public bool Validator = true;
+    public bool Cycler = false;
+    public bool Orbiter = false;
+    public Compound? LawCompound { get; init; }
 }
 
 public class ElementSynthesis : Molecule

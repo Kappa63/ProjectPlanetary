@@ -40,6 +40,7 @@ public class Bonder
         return this.retrieveAtom(false).Type switch
         {
             AtomType.ELEMENT_SYNTHESIZER or AtomType.ELEMENT_STABILIZER => this.bondElementSynthesis(),
+            AtomType.LAW_SYNTHESIZER => this.bondLawSynthesis(),
             _ => this.bondOperation()
         };
     }
@@ -72,6 +73,56 @@ public class Bonder
         return elementSynthesis;
     }
 
+    private Molecule bondLawSynthesis()
+    {
+        this.retrieveAtom(true);
+        this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
+        Operation tempDichoOp = this.bondDisjunctionOperation();
+        this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
+        Atom curAtom = this.retrieveAtom(false);
+        bool validation = true;
+        bool cyclic = false;
+        bool orbital = false;
+        while (checkHorizon() && curAtom.Type != AtomType.OPEN_CURLED_ENCLOSURE)
+        {
+            switch (this.retrieveAtom(true).Type)
+            {
+                case AtomType.LAW_VALIDATOR:
+                    validation = true;
+                    break;
+                case AtomType.LAW_INVALIDATOR:
+                    validation = false;
+                    break;
+                case AtomType.LAW_CYCLER:
+                    cyclic = true;
+                    break;
+                case AtomType.LAW_ORBITER:
+                    orbital = true;
+                    break;
+            }
+            curAtom = this.retrieveAtom(false);
+        }
+        this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
+        Compound planetCompound = new Compound();
+        curAtom = this.retrieveAtom(false);
+        while (this.checkHorizon() && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+        {
+            planetCompound.Molecules.Add(this.bondMolecule());
+            this.retrieveAtom(true, AtomType.POLE);
+            curAtom = this.retrieveAtom(false);
+        }
+        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
+
+        return new LawSynthesis()
+        {
+            LawDicho = tempDichoOp as DichotomicOperation,
+            Validator = validation,
+            Cycler = cyclic,
+            Orbiter = orbital,
+            LawCompound = planetCompound
+        };
+    }
+
     private Molecule bondPlanetSynthesis()
     {
         this.retrieveAtom(true);
@@ -83,7 +134,7 @@ public class Bonder
         this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
         Compound planetCompound = new Compound();
         Atom curAtom = this.retrieveAtom(false);
-        while (curAtom.Type != AtomType.HORIZON && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+        while (this.checkHorizon() && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
         {
             planetCompound.Molecules.Add(this.bondMolecule());
             this.retrieveAtom(true, AtomType.POLE);

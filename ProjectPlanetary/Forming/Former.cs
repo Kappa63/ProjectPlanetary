@@ -30,6 +30,7 @@ public class Former
             MoleculeType.ELEMENT => retrieveElement((mol as Element)!, sp),
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
             MoleculeType.PLANET_SYNTHESIS => formPlanet((mol as PlanetSynthesis)!, sp),
+            MoleculeType.LAW_SYNTHESIS => formLaw((mol as LawSynthesis)!, sp),
             MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
             MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
@@ -146,7 +147,7 @@ public class Former
         return sp.synthesizeElement(element.Symbol!, element.Magnitude!=null?this.formMolecule(element.Magnitude, sp):new ExplicitFormedVacuum(), element.Stable!.Value);
     }
 
-    private ExplicitFormation formPlanet(PlanetSynthesis planet, Space sp)
+    private static ExplicitFormation formPlanet(PlanetSynthesis planet, Space sp)
     {
         return sp.synthesizeElement(planet.Symbol!, new ExplicitFormedPlanet()
         {
@@ -184,5 +185,14 @@ public class Former
             return this.formCompound(tempPlanet.PlanetCompound!, planetSpace);
         }
         throw new Exception("Can't call non-planet.");
+    }
+
+    private ExplicitFormation formLaw(LawSynthesis law, Space sp)
+    {
+        Space lawSpace = new Space(sp);
+
+        ExplicitFormedDicho tempDicho = RetrieveExplicitDicho(this.formMolecule((law.LawDicho as DichotomicOperation)!, lawSpace)!, !law.Validator)!;
+
+        return tempDicho.State ? this.formCompound(law.LawCompound!, lawSpace) : new ExplicitFormedVacuum();
     }
 }
