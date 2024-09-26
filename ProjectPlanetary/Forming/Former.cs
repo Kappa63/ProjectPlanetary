@@ -60,8 +60,8 @@ public class Former
             ExplicitType.DICHO => negation?new ExplicitFormedDicho()
             {
                 State = !((form as ExplicitFormedDicho)!.State)
-            }:(form as ExplicitFormedDicho)!
-            
+            }:(form as ExplicitFormedDicho)!,
+            _ => throw new ArgumentException("Can't Retrieve Dicho from non Dicho or Mag Expression")
         };
 
         return x;
@@ -100,7 +100,8 @@ public class Former
             ExplicitType.DICHO => new ExplicitFormedMagnitude()
             {
                 Magnitude = (form as ExplicitFormedDicho)!.State ? 1 : 0
-            }
+            },
+            _ => throw new ArgumentException("Can't Retrieve Magnitude from non Dicho or Mag Expression")
         };
     }
 
@@ -190,9 +191,14 @@ public class Former
     private ExplicitFormation formLaw(LawSynthesis law, Space sp)
     {
         Space lawSpace = new Space(sp);
-
-        ExplicitFormedDicho tempDicho = RetrieveExplicitDicho(this.formMolecule((law.LawDicho as DichotomicOperation)!, lawSpace)!, !law.Validator)!;
-
-        return tempDicho.State ? this.formCompound(law.LawCompound!, lawSpace) : new ExplicitFormedVacuum();
+        ExplicitFormation tempForm = new ExplicitFormedVacuum();
+        
+        do
+            if (RetrieveExplicitDicho(this.formMolecule(law.LawDicho!, lawSpace), !law.Validator).State)
+                tempForm = this.formCompound(law.LawCompound!, lawSpace);
+            else break;
+        while (law.Orbiter);
+        
+        return tempForm;
     }
 }

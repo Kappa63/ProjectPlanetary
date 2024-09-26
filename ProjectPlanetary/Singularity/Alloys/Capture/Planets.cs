@@ -3,15 +3,8 @@ using ProjectPlanetary.Forming;
 namespace ProjectPlanetary.Singularity.Alloys.Capture;
 
 public static class Planets
-{
-    public static readonly Dictionary<string, ExplicitFormation> planetTrajectories = new Dictionary<string, ExplicitFormation>()
-    {
-        {"text", new ExplicitFormedPrimePlanet(){Voyage = textCapture}},
-        {"magnitude", new ExplicitFormedPrimePlanet(){Voyage = magCapture}},
-        // {"dicho", new ExplicitFormedPrimePlanet(){Voyage = output}},
-    };
-    
-    private static ExplicitFormation textCapture(List<ExplicitFormation> forms, Space sp)
+{    
+    internal static ExplicitFormation textCapture(List<ExplicitFormation> forms, Space sp)
     {
         string? tempText = Console.ReadLine();
         if (tempText == null) return new ExplicitFormedVacuum();
@@ -23,7 +16,7 @@ public static class Planets
         };
     }
     
-    private static ExplicitFormation magCapture(List<ExplicitFormation> forms, Space sp)
+    internal static ExplicitFormation magCapture(List<ExplicitFormation> forms, Space sp)
     {
         string? tempText = Console.ReadLine();
         if (tempText == null) return new ExplicitFormedVacuum();

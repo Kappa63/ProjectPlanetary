@@ -46,7 +46,7 @@ public class PlanetSynthesis : Molecule
 public class LawSynthesis : Molecule
 {
     public override MoleculeType Type { get; } = MoleculeType.LAW_SYNTHESIS;
-    public DichotomicOperation? LawDicho  { get; init; }
+    public Operation? LawDicho  { get; init; }
     public bool Validator = true;
     public bool Cycler = false;
     public bool Orbiter = false;
@@ -124,7 +124,6 @@ public class ExplicitMagnitude : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_MAGNITUDE;
 
     public double Magnitude { get; init; }
-    // public bool Dichotomous { get; set; } = false;
 }
 
 public class ExplicitText : Operation
@@ -132,7 +131,6 @@ public class ExplicitText : Operation
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_TEXT;
 
     public string? Text { get; init; }
-    // public bool Dichotomous { get; set; } = false;
 }
 
 public class ExplicitDicho : Operation

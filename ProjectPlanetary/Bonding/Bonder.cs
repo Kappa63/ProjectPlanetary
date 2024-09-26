@@ -115,7 +115,7 @@ public class Bonder
 
         return new LawSynthesis()
         {
-            LawDicho = tempDichoOp as DichotomicOperation,
+            LawDicho = tempDichoOp,
             Validator = validation,
             Cycler = cyclic,
             Orbiter = orbital,

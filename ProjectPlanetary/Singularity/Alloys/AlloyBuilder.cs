@@ -4,16 +4,18 @@ namespace ProjectPlanetary.Singularity.Alloys;
 
 public static class AlloyBuilder
 {
+    private static readonly List<Expander> primeAlloyExpanders = new List<Expander>()
+    {
+        Capture.Expand.Expansion,
+        Eject.Expand.Expansion
+    };
+    
     public static void expandPrimeAlloys(Space sp)
     {
-        sp.synthesizeElement("eject", new ExplicitFormedAlloy()
-        {
-            Properties = Eject.Planets.planetTrajectories
-        }, true);
-        
-        sp.synthesizeElement("capture", new ExplicitFormedAlloy()
-        {
-            Properties = Capture.Planets.planetTrajectories
-        }, true);
+        foreach (Expander alloyExpander in primeAlloyExpanders)
+            sp.synthesizeElement(alloyExpander.AlloyName!, new ExplicitFormedAlloy()
+            {
+                Properties = alloyExpander.PlanetTrajectories!
+            }, true);
     }
 }

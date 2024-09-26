@@ -5,13 +5,7 @@ using System.Text.Json;
 namespace ProjectPlanetary.Singularity.Alloys.Eject;
 public static class Planets
 {
-    public static readonly Dictionary<string, ExplicitFormation> planetTrajectories = new Dictionary<string, ExplicitFormation>()
-    {
-        {"debug", new ExplicitFormedPrimePlanet(){Voyage = debugEject}},
-        {"out", new ExplicitFormedPrimePlanet(){Voyage = outputEject}}
-    };
-    
-    private static ExplicitFormation debugEject(List<ExplicitFormation> forms, Space sp)
+    internal static ExplicitFormation debugEject(List<ExplicitFormation> forms, Space sp)
     {
         foreach (ExplicitFormation form in forms)
         {
@@ -21,7 +15,7 @@ public static class Planets
         return new ExplicitFormedVacuum();
     }
     
-    private static ExplicitFormation outputEject(List<ExplicitFormation> forms, Space sp)
+    internal static ExplicitFormation outputEject(List<ExplicitFormation> forms, Space sp)
     {
         foreach (ExplicitFormation form in forms)
         {

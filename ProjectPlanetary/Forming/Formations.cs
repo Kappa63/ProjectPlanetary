@@ -65,14 +65,3 @@ public class ExplicitFormedPlanet : ExplicitFormation
     public Space? PlanetSpace { get; init; }
     public Compound? PlanetCompound { get; init; }
 }
-
-public class ExplicitFormedLaw : ExplicitFormation
-{
-    public override ExplicitType Type { get; } = ExplicitType.LAW;
-    public DichotomicOperation? LawDicho  { get; init; }
-    public Space? LawSpace { get; init; }
-    public bool Validator = true;
-    public bool Cycler = false;
-    public bool Orbiter = false;
-    public Compound? LawCompound { get; init; }
-}
