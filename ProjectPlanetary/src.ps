@@ -55,30 +55,40 @@
 // y = capture.magnitude();
 // calcResults(x, y);
 
-law |True and False| valid  {
-    eject.out("law 1");
-};
+// law |True and False| valid  {
+//     eject.out("law 1");
+// };
 
-law |True and False| invalid  {
-    eject.out("law 2");
-};
+// law |True and False| invalid  {
+//     eject.out("law 2");
+// };
 
-law |True or False| valid  {
-    eject.out("law 3");
-};
+// law |True or False| valid  {
+//     eject.out("law 3");
+// };
 
-law |True or False| invalid  {
-    eject.out("law 4");
-};
+// law |True or False| invalid  {
+//     eject.out("law 4");
+// };
 
-synth x = 5;
+// synth h = 5;
 
-law |x| valid orbit {
-    eject.out(x);
-    x = x-1;
-};
+// law |h| valid orbit {
+//     eject.out(h);
+//     h = h-1;
+// };
 
-law |x| invalid orbit {
-    eject.out(x);
-    x = x-1;
-};
+// law |h| invalid orbit {
+//     eject.out(h);
+//     h = h+1;
+// };
+
+// synth z = 1+x.a+2*1+True;
+// eject.out(z);
+
+// synth n = <"hi"..x.a.."jo">;
+// n = 1 + "hi" + True;
+// eject.debug(<True>);
+
+eject.out(<"hi "..(4+2).." "..|True or False|>);
+
