@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.VisualBasic.FileIO;
 
 namespace ProjectPlanetary.Bonding;
@@ -152,25 +153,13 @@ public class Bonder2
     private Operation bondOperation()
     {
         return this.bondModificationOperation();
-        // switch (this.retrieveAtom(true).Type)
-        // {
-        //     case AtomType.OPEN_CURLED_ENCLOSURE:
-        //         return bondAlloyOperation();
-        // }
     }
 
-    private Operation bondMagDichoOperation()
-    {
-        return this.retrieveAtom(false).Type == AtomType.DICHO_ENCLOSURE
-            ? this.bondDichotomicOperation()
-            : this.bondMagnitudinalOperation();
-    }
-
-    private Operation bondModificationOperation() 
+    private Operation bondModificationOperation()
     {
         Operation preAssignmentOperation = this.bondAlloyOperation();
+
         if (this.retrieveAtom(false).Type != AtomType.EQUIVALENCE) return preAssignmentOperation;
-        
         this.retrieveAtom(true);
         Operation postAssignmentOperation = this.bondModificationOperation();
         return new ElementModification()
@@ -183,8 +172,10 @@ public class Bonder2
     private Operation bondAlloyOperation()
     {
         if (this.retrieveAtom(false).Type != AtomType.OPEN_CURLED_ENCLOSURE)
-            return this.bondMagDichoOperation();
-        
+        {
+            return this.bondMagnitudinalOperation();
+            // return this.retrieveAtom(false).Type == AtomType.DICHO_ENCLOSURE ? this.bondDichotomicOperation() : this.bondMagnitudinalOperation();
+        }
         this.retrieveAtom(true);
         List<Property> properties = new List<Property>();
         while (this.checkHorizon() && this.retrieveAtom(false).Type != AtomType.CLOSE_CURLED_ENCLOSURE)
@@ -249,12 +240,12 @@ public class Bonder2
 
     private Operation bondPiOperation()
     {
-        Operation preGeneralOperation = this.bondGeneralMagnitudinalOperation();
+        Operation preGeneralOperation = this.findNextBondedOperation();
 
         while (this.retrieveAtom(false).Type == AtomType.PI_OPERATOR)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postGeneralOperation = this.bondGeneralMagnitudinalOperation();
+            Operation postGeneralOperation = this.findNextBondedOperation();
             preGeneralOperation = new MagnitudinalOperation()
             {
                 Pre = preGeneralOperation,
@@ -264,17 +255,85 @@ public class Bonder2
         }
         return preGeneralOperation;
     }
+
+    private Operation findNextBondedOperation()
+    {
+        // Atom curAtom = this.retrieveAtom(false);
+        return this.retrieveAtom(false).Type switch
+        {
+            AtomType.DICHO_ENCLOSURE => this.bondDichotomicOperation(),
+            AtomType.OPEN_ANGLED_ENCLOSURE => this.bondTextOperation(),
+            AtomType.TEXT => new ExplicitText(){Text = this.retrieveAtom(true).Value,},
+            _ => this.bondVoyageTrajectoryOperation()
+        };
+    }
+
+    private Operation bondTextOperation()
+    {
+        this.retrieveAtom(true);
+        Operation tempTextOp = this.bondMergeTextOperation();
+        this.retrieveAtom(true, AtomType.CLOSE_ANGLED_ENCLOSURE);
+        return tempTextOp;
+    }
+
+    private Operation bondMergeTextOperation()
+    {
+        Operation preJunctionOperation = this.textOpOperation(bondMagnitudinalOperation());
+        while (this.retrieveAtom(false).Type == AtomType.TEXT_MERGER)
+        {
+            string operation = this.retrieveAtom(true).Value;
+            Operation postJunctionOperation = this.textOpOperation(bondMagnitudinalOperation());
+            preJunctionOperation = new TextOperation()
+            {
+                Pre = preJunctionOperation,
+                Post = postJunctionOperation,
+                TextOperator = operation,
+            };
+        }
+
+        return preJunctionOperation;
+    }
+    
+    private Operation textOpOperation(Operation generalOperation)
+    {
+        if (generalOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
+        {
+            return new ExplicitText()
+            {
+                Text = (generalOperation as ExplicitMagnitude)!.Magnitude.ToString(CultureInfo.CurrentCulture),
+            };
+        }
+        if (generalOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
+        {
+            MagnitudinalOperation tempMag = (generalOperation as MagnitudinalOperation)!;
+            tempMag.TextOP = true;
+            return tempMag;
+        }
+        if (generalOperation.Type == MoleculeType.ELEMENT)
+        {
+            Element tempElement = (generalOperation as Element)!;
+            tempElement.TextOP = true;
+            return tempElement;
+        }
+        if (generalOperation.Type == MoleculeType.EXPLICIT_DICHO)
+        {
+            return new ExplicitText()
+            {
+                Text = (generalOperation as ExplicitDicho)!.State.ToString(CultureInfo.CurrentCulture)
+            };
+        }
+        if (generalOperation.Type == MoleculeType.DICHOTOMIC_OPERATION)
+        {
+            DichotomicOperation tempDicho = (generalOperation as DichotomicOperation)!;
+            tempDicho.TextOP = true;
+            return tempDicho;
+        }
+
+        return generalOperation;
+    }
     
     private Operation bondDichotomicOperation()
     {
-        Atom curAtom = this.retrieveAtom(false);
-        if (curAtom.Type == AtomType.TEXT)
-        {
-            this.retrieveAtom(true);
-            return new ExplicitText(){Text = curAtom.Value}; // .Trim('"')
-        }
-        if (curAtom.Type != AtomType.DICHO_ENCLOSURE)
-            return this.bondVoyageTrajectoryOperation();
         this.retrieveAtom(true);
         Operation tempDichoOp = this.bondDisjunctionOperation();
         this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
@@ -322,30 +381,42 @@ public class Bonder2
         return preNegateOperation;
     }
 
-    private Operation dichotomizeMagnitude(Operation magnitudeOperation)
+    private Operation dichotomizeMagnitude(Operation generalOperation)
     {
-        if (magnitudeOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
+        if (generalOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
         {
             return new ExplicitDicho()
             {
-                State = (magnitudeOperation as ExplicitMagnitude)!.Magnitude != 0,
+                State = (generalOperation as ExplicitMagnitude)!.Magnitude != 0,
             };
         }
-            
-        if (magnitudeOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
+        if (generalOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
         {
-            MagnitudinalOperation tempMag = (magnitudeOperation as MagnitudinalOperation)!;
+            MagnitudinalOperation tempMag = (generalOperation as MagnitudinalOperation)!;
             tempMag.Dichotomous = true;
             return tempMag;
         }
-        if (magnitudeOperation.Type == MoleculeType.ELEMENT)
+        if (generalOperation.Type == MoleculeType.EXPLICIT_TEXT)
         {
-            Element tempElement = (magnitudeOperation as Element)!;
+            return new ExplicitDicho()
+            {
+                State = (generalOperation as ExplicitText)!.Text!.Length != 0,
+            };
+        }
+        if (generalOperation.Type == MoleculeType.TEXT_OPERATION)
+        {
+            TextOperation tempText = (generalOperation as TextOperation)!;
+            tempText.Dichotomous = true;
+            return tempText;
+        }
+        if (generalOperation.Type == MoleculeType.ELEMENT)
+        {
+            Element tempElement = (generalOperation as Element)!;
             tempElement.Dichotomous = true;
             return tempElement;
         }
 
-        return magnitudeOperation;
+        return generalOperation;
     }
     
     private Operation bondGeneralDichotomicOperation()
@@ -460,10 +531,6 @@ public class Bonder2
                 {
                     Magnitude = double.Parse(this.retrieveAtom(true).Value)
                 };
-                
-            // case AtomType.VACUUM:
-            //     this.getAtom(true);
-            //     return new ExplicitVacuum();
             case AtomType.OPEN_ROUND_ENCLOSURE:   
                 this.retrieveAtom(true);
                 Operation operation = this.bondOperation();

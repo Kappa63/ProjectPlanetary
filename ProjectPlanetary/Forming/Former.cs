@@ -1,3 +1,4 @@
+using System.Globalization;
 using ProjectPlanetary.Singularity;
 using ProjectPlanetary.Bonding;
 
@@ -33,6 +34,7 @@ public class Former
             MoleculeType.LAW_SYNTHESIS => formLaw((mol as LawSynthesis)!, sp),
             MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
+            MoleculeType.TEXT_OPERATION => this.formTextOperation((mol as TextOperation)!, sp),
             MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
             MoleculeType.ALLOY_TRAJECTORY_OPERATION => this.retrieveAlloyTrajectory((mol as AlloyTrajectoryOperation)!, sp),
@@ -44,9 +46,53 @@ public class Former
     {
         ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
         ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
-        if (preFormation.Type != ExplicitType.VACUUM && postFormation.Type != ExplicitType.VACUUM)
-            return RetrieveExplicitDicho(formExplicitDichotomicOperation(RetrieveExplicitDicho(preFormation), RetrieveExplicitDicho(postFormation), operation.DichoOperator, operation.Negated));
-        return new ExplicitFormedVacuum();
+        if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
+            return new ExplicitFormedVacuum();
+        ExplicitFormation tempMag = RetrieveExplicitDicho(formExplicitDichotomicOperation(RetrieveExplicitDicho(preFormation), RetrieveExplicitDicho(postFormation), operation.DichoOperator, operation.Negated));
+        if (operation.TextOP)
+            return RetrieveExplicitText(tempMag);
+        return tempMag;        
+    }
+    
+    private ExplicitFormation formTextOperation(TextOperation operation, Space sp)
+    {
+        ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
+        ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
+        if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
+            return new ExplicitFormedVacuum();
+        ExplicitFormation tempMag = RetrieveExplicitText(formExplicitTextOperation(RetrieveExplicitText(preFormation), RetrieveExplicitText(postFormation), operation.TextOperator));
+        if (operation.Dichotomous)
+            return this.RetrieveExplicitDicho(tempMag);
+        return tempMag;     
+    }
+    
+    private static ExplicitFormedText RetrieveExplicitText(ExplicitFormation form)
+    {
+        return form.Type switch
+        {
+            ExplicitType.MAGNITUDE => new ExplicitFormedText()
+            {
+                Text = (form as ExplicitFormedMagnitude)!.Magnitude.ToString(CultureInfo.CurrentCulture) 
+            },
+            ExplicitType.DICHO => new ExplicitFormedText()
+            {
+                Text = (form as ExplicitFormedDicho)!.State.ToString(CultureInfo.CurrentCulture)
+            },
+            ExplicitType.TEXT => (form as ExplicitFormedText)!,
+            _ => throw new ArgumentException("Can't Retrieve Text from non Dicho or Mag Expression")
+        };
+    }
+    
+    private static ExplicitFormation formExplicitTextOperation(ExplicitFormedText pre, ExplicitFormedText post, string operation)
+    {
+        return new ExplicitFormedText()
+        {
+            Text = operation switch
+            {
+                ".." => pre.Text!.TrimEnd('\"') + post.Text!.TrimStart('\"'),
+                _ => throw new InvalidOperationException("Invalid operator")
+            }
+        };
     }
     
     private ExplicitFormedDicho RetrieveExplicitDicho(ExplicitFormation form, bool negation=false)
@@ -61,6 +107,10 @@ public class Former
             {
                 State = !((form as ExplicitFormedDicho)!.State)
             }:(form as ExplicitFormedDicho)!,
+            ExplicitType.TEXT => new ExplicitFormedDicho()
+            {
+                State = negation?(form as ExplicitFormedText)!.Text!.Length==0:(form as ExplicitFormedText)!.Text!.Length!=0 
+            },
             _ => throw new ArgumentException("Can't Retrieve Dicho from non Dicho or Mag Expression")
         };
 
@@ -89,7 +139,11 @@ public class Former
         if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
             return new ExplicitFormedVacuum();
         ExplicitFormation tempMag = formExplicitMagnitudinalOperation(retrieveExplicitMagnitude(preFormation), retrieveExplicitMagnitude(postFormation), operation.MagnitudeOperator);
-        return operation.Dichotomous?this.RetrieveExplicitDicho(tempMag):tempMag;
+        if (operation.Dichotomous)
+            return this.RetrieveExplicitDicho(tempMag);
+        if (operation.TextOP)
+            return RetrieveExplicitText(tempMag);
+        return tempMag;
     }
 
     private static ExplicitFormedMagnitude retrieveExplicitMagnitude(ExplicitFormation form)
@@ -101,24 +155,27 @@ public class Former
             {
                 Magnitude = (form as ExplicitFormedDicho)!.State ? 1 : 0
             },
+            ExplicitType.TEXT => new ExplicitFormedMagnitude()
+            {
+                Magnitude = (form as ExplicitFormedText)!.Text!.Length==0 ? 0 : 1
+            },
             _ => throw new ArgumentException("Can't Retrieve Magnitude from non Dicho or Mag Expression")
         };
     }
 
     private static ExplicitFormation formExplicitMagnitudinalOperation(ExplicitFormedMagnitude pre, ExplicitFormedMagnitude post, string operation)
     {
-        double magFormed = operation switch
-        {
-            "+" => pre.Magnitude + post.Magnitude,
-            "-" => pre.Magnitude - post.Magnitude,
-            "*" => pre.Magnitude * post.Magnitude,
-            "/" => post.Magnitude != 0? pre.Magnitude/post.Magnitude : throw new DivideByZeroException(),
-            "%" => pre.Magnitude % post.Magnitude,
-            _ => throw new InvalidOperationException("Invalid operator")
-        };
         return new ExplicitFormedMagnitude()
         {
-            Magnitude = magFormed
+            Magnitude = operation switch
+            {
+                "+" => pre.Magnitude + post.Magnitude,
+                "-" => pre.Magnitude - post.Magnitude,
+                "*" => pre.Magnitude * post.Magnitude,
+                "/" => post.Magnitude != 0? pre.Magnitude/post.Magnitude : throw new DivideByZeroException(),
+                "%" => pre.Magnitude % post.Magnitude,
+                _ => throw new InvalidOperationException("Invalid operator")
+            }
         };
     }
 

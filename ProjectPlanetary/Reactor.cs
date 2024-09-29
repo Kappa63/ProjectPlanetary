@@ -8,10 +8,12 @@ public enum AtomType {
     EQUIVALENCE,
     EXCEEDS,
     EQUATES,
+    UNEQUATES,
     RECEDES, 
     NEGATER,
     CONJUNCTOR,
     DISJUNCTOR,
+    TEXT_MERGER,
     
     OPEN_ROUND_ENCLOSURE,
     CLOSE_ROUND_ENCLOSURE,
@@ -76,11 +78,13 @@ public static class Reactor
         // { "vacuum", AtomType.VACUUM }
     };
 
-    private const string Isotope = "(?<TEXT>\\\".*\\\")|" // "(?<TEXT>(?<=\\\").*(?=\\\"))|"
+    private const string Isotope = "(?<TEXT>\\\"([^\\\"]*)\\\")|" // "(?<TEXT>(?<=\\\").*(?=\\\"))|"
                                    + @"(?<MAGNITUDE>\d+)|"
+                                   + @"(?<TEXT_MERGER>\.\.)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
+                                   + @"(?<UNEQUATES>\!\=)|"
                                    + @"(?<EQUATES>\=\=)|"
                                    + @"(?<EQUIVALENCE>\=)|"
                                    + @"(?<EXCEEDS>\>\>)|"
