@@ -278,11 +278,11 @@ public class Bonder2
 
     private Operation bondMergeTextOperation()
     {
-        Operation preJunctionOperation = this.textOpOperation(bondMagnitudinalOperation());
+        Operation preJunctionOperation = textOpOperation(bondMagnitudinalOperation());
         while (this.retrieveAtom(false).Type == AtomType.TEXT_MERGER)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postJunctionOperation = this.textOpOperation(bondMagnitudinalOperation());
+            Operation postJunctionOperation = textOpOperation(bondMagnitudinalOperation());
             preJunctionOperation = new TextOperation()
             {
                 Pre = preJunctionOperation,
@@ -294,14 +294,17 @@ public class Bonder2
         return preJunctionOperation;
     }
     
-    private Operation textOpOperation(Operation generalOperation)
+    private static Operation textOpOperation(Operation generalOperation)
     {
         if (generalOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
         {
-            return new ExplicitText()
-            {
-                Text = (generalOperation as ExplicitMagnitude)!.Magnitude.ToString(CultureInfo.CurrentCulture),
-            };
+            ExplicitMagnitude tempMag = (generalOperation as ExplicitMagnitude)!;
+            tempMag.TextOP = true;
+            return tempMag;
+            // return new ExplicitText()
+            // {
+            //     Text = (generalOperation as ExplicitMagnitude)!.Magnitude.ToString(CultureInfo.CurrentCulture),
+            // };
         }
         if (generalOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
         {
@@ -317,10 +320,13 @@ public class Bonder2
         }
         if (generalOperation.Type == MoleculeType.EXPLICIT_DICHO)
         {
-            return new ExplicitText()
-            {
-                Text = (generalOperation as ExplicitDicho)!.State.ToString(CultureInfo.CurrentCulture)
-            };
+            ExplicitDicho tempDicho = (generalOperation as ExplicitDicho)!;
+            tempDicho.TextOP = true;
+            return tempDicho;
+            // return new ExplicitText()
+            // {
+            //     Text = (generalOperation as ExplicitDicho)!.State.ToString(CultureInfo.CurrentCulture)
+            // };
         }
         if (generalOperation.Type == MoleculeType.DICHOTOMIC_OPERATION)
         {
@@ -364,15 +370,34 @@ public class Bonder2
     {
         // if (this.retrieveAtom(false).Type == AtomType.OPEN_ROUND_ENCLOSURE)
         //     return this.bondGeneralDichotomicOperation();
-        Operation preNegateOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
+        Operation preCompOperation = this.bondComparisonOperation(negateState);
         while (this.retrieveAtom(false).Type == AtomType.CONJUNCTOR)
         {
             string operation = this.retrieveAtom(true).Value;
-            Operation postGeneralOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
+            Operation postCompOperation = this.bondComparisonOperation();
+            preCompOperation = new DichotomicOperation()
+            {
+                Pre = preCompOperation,
+                Post = postCompOperation,
+                DichoOperator = operation,
+                Negated = negateState
+            };
+            negateState = false;
+        }
+        return preCompOperation;
+    }
+
+    private Operation bondComparisonOperation(bool negateState = false)
+    {
+        Operation preNegateOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
+        while (this.retrieveAtom(false).Type == AtomType.COMP_OPERATOR)
+        {
+            string operation = this.retrieveAtom(true).Value;
+            Operation postNegateOperation = this.dichotomizeMagnitude(this.bondMagnitudinalOperation());
             preNegateOperation = new DichotomicOperation()
             {
                 Pre = preNegateOperation,
-                Post = postGeneralOperation,
+                Post = postNegateOperation,
                 DichoOperator = operation,
                 Negated = negateState
             };
@@ -385,10 +410,13 @@ public class Bonder2
     {
         if (generalOperation.Type == MoleculeType.EXPLICIT_MAGNITUDE)
         {
-            return new ExplicitDicho()
-            {
-                State = (generalOperation as ExplicitMagnitude)!.Magnitude != 0,
-            };
+            ExplicitMagnitude tempMag = (generalOperation as ExplicitMagnitude)!;
+            tempMag.Dichotomous = true;
+            return tempMag;
+            // return new ExplicitDicho()
+            // {
+            //     State = (generalOperation as ExplicitMagnitude)!.Magnitude != 0,
+            // };
         }
         if (generalOperation.Type == MoleculeType.MAGNITUDINAL_OPERATION)
         {
@@ -398,10 +426,13 @@ public class Bonder2
         }
         if (generalOperation.Type == MoleculeType.EXPLICIT_TEXT)
         {
-            return new ExplicitDicho()
-            {
-                State = (generalOperation as ExplicitText)!.Text!.Length != 0,
-            };
+            ExplicitText tempText = (generalOperation as ExplicitText)!;
+            tempText.Dichotomous = true;
+            return tempText;
+            // return new ExplicitDicho()
+            // {
+            //     State = (generalOperation as ExplicitText)!.Text!.Length != 0,
+            // };
         }
         if (generalOperation.Type == MoleculeType.TEXT_OPERATION)
         {

@@ -1,0 +1,44 @@
+synth planet add(a, b) {
+    a+b;
+};
+synth planet sub(a, b) {
+    a-b;
+};
+synth planet mul(a, b) {
+    a*b;
+};
+synth planet div(a, b) {
+    a/b;
+};
+synth planet rem(a, b) {
+    a%b;
+};
+
+synth a = Vacuum;
+law |a != "/" and a != "*" and a != "+" and a != "-" and a != "%"| valid orbit {
+    eject.out("Enter an operation (/, *, -, +, %): ");
+    a = capture.text(1);
+};
+
+eject.out("Enter a Value X: ");
+stable synth x = capture.magnitude();
+eject.out("Enter a Value Y: ");
+stable synth y = capture.magnitude();
+
+synth res = Vacuum;
+law |a == "/"| valid {
+    res = div(x,y);
+};
+law |a == "*"| valid {
+    res = mul(x,y);
+};
+law |a == "+"| valid {
+    res = add(x,y);
+};
+law |a == "-"| valid {
+    res = sub(x,y);
+};
+law |a == "%"| valid {
+    res = rem(x,y);
+};
+eject.out("Result is: ", res);

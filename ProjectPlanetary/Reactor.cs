@@ -6,10 +6,11 @@ public enum AtomType {
     MAGNITUDE,
     ELEMENT,
     EQUIVALENCE,
-    EXCEEDS,
-    EQUATES,
-    UNEQUATES,
-    RECEDES, 
+    // EXCEEDS,
+    // EQUATES,
+    // UNEQUATES,
+    // RECEDES, 
+    COMP_OPERATOR,
     NEGATER,
     CONJUNCTOR,
     DISJUNCTOR,
@@ -84,11 +85,12 @@ public static class Reactor
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
-                                   + @"(?<UNEQUATES>\!\=)|"
-                                   + @"(?<EQUATES>\=\=)|"
+                                   + @"(?<COMP_OPERATOR>(\>\>|\=\=|\<\<|\!\=|\>\=|\<\=))|"
+                                   // + @"(?<UNEQUATES>\!\=)|"
+                                   // + @"(?<EQUATES>\=\=)|"
                                    + @"(?<EQUIVALENCE>\=)|"
-                                   + @"(?<EXCEEDS>\>\>)|"
-                                   + @"(?<RECEDES>\<\<)|"
+                                   // + @"(?<EXCEEDS>\>\>)|"
+                                   // + @"(?<RECEDES>\<\<)|"
                                    + @"(?<NEGATER>\!)|"
                                    + @"(?<DICHO_ENCLOSURE>\|)|"
                                    + @"(?<OPEN_ROUND_ENCLOSURE>\()|"

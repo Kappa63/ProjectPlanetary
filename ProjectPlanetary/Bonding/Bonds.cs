@@ -62,7 +62,11 @@ public class ElementSynthesis : Molecule
 }
 
 
-public abstract class Operation : Molecule { }
+public abstract class Operation : Molecule
+{
+    public bool Dichotomous { get; set; } = false;
+    public bool TextOP { get; set; } = false;
+}
 
 public class MagnitudinalOperation : Operation
 { 
@@ -70,9 +74,6 @@ public class MagnitudinalOperation : Operation
     public Operation? Pre { get; init; }
     public Operation? Post { get; init; }
     public string MagnitudeOperator { get; init; } = "+";
-    public bool Dichotomous { get; set; } = false;
-    public bool TextOP { get; set; } = false;
-
 }
 
 public class DichotomicOperation : Operation
@@ -82,7 +83,6 @@ public class DichotomicOperation : Operation
     public Operation? Post { get; init; }
     public string DichoOperator { get; init; } = "==";
     public bool Negated { get; init; }
-    public bool TextOP { get; set; } = false;
 }
 
 public class TextOperation : Operation
@@ -91,7 +91,6 @@ public class TextOperation : Operation
     public Operation? Pre { get; init; }
     public Operation? Post { get; init; }
     public string TextOperator { get; init; } = "..";
-    public bool Dichotomous { get; set; } = false;
 }
 
 public class Element : Operation
@@ -99,8 +98,6 @@ public class Element : Operation
     public override MoleculeType Type { get; } = MoleculeType.ELEMENT;
     public string? Symbol { get; init; }
     public bool DichoNegated { get; init; }
-    public bool Dichotomous { get; set; } = false;
-    public bool TextOP { get; set; } = false;
 }
 
 public class Property : Operation

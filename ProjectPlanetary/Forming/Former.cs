@@ -22,9 +22,9 @@ public class Former
     {
         return mol.Type switch
         {
-            MoleculeType.EXPLICIT_MAGNITUDE => new ExplicitFormedMagnitude(){Magnitude = (mol as ExplicitMagnitude)!.Magnitude},
-            MoleculeType.EXPLICIT_DICHO => new ExplicitFormedDicho(){State = (mol as ExplicitDicho)!.State},
-            MoleculeType.EXPLICIT_TEXT => new ExplicitFormedText(){Text = (mol as ExplicitText)!.Text},
+            MoleculeType.EXPLICIT_MAGNITUDE => formProperFromExplicitMagnitude((mol as ExplicitMagnitude)!),
+            MoleculeType.EXPLICIT_DICHO => formProperFromExplicitDicho((mol as ExplicitDicho)!),
+            MoleculeType.EXPLICIT_TEXT => formProperFromExplicitText((mol as ExplicitText)!),
             // MoleculeType.EXPLICIT_VACUUM => new ExplicitFormedVacuum(),
             MoleculeType.VOYAGE_OPERATION => this.formPlanetaryVoyage((mol as VoyageOperation)!, sp),
             MoleculeType.MAGNITUDINAL_OPERATION => this.formMagnitudinalOperation((mol as MagnitudinalOperation)!, sp),
@@ -42,13 +42,41 @@ public class Former
         };
     }
     
+    private ExplicitFormation formProperFromExplicitMagnitude(ExplicitMagnitude mol)
+    {
+        ExplicitFormedMagnitude tempMag = new ExplicitFormedMagnitude() { Magnitude = mol.Magnitude };
+        // if (mol.Dichotomous)
+        //     return RetrieveExplicitDicho(tempMag);
+        // if (mol.TextOP)
+        //     return RetrieveExplicitText(tempMag);
+        return tempMag;
+    }
+    
+    private static ExplicitFormation formProperFromExplicitDicho(ExplicitDicho mol)
+    {
+        ExplicitFormedDicho tempMag = new ExplicitFormedDicho() { State = mol.State };
+        // if (mol.TextOP)
+        //     return RetrieveExplicitText(tempMag);
+        return tempMag;
+    }
+
+    private ExplicitFormation formProperFromExplicitText(ExplicitText mol)
+    {
+        ExplicitFormedText tempMag = new ExplicitFormedText() { Text = mol.Text };
+        // if (mol.Dichotomous)
+        //     return RetrieveExplicitDicho(tempMag);
+        // if (mol.TextOP)
+        //     return RetrieveExplicitText(tempMag);
+        return tempMag;
+    }
+    
     private ExplicitFormation formDichotomicOperation(DichotomicOperation operation, Space sp)
     {
         ExplicitFormation preFormation = formMolecule(operation.Pre!, sp);
         ExplicitFormation postFormation = formMolecule(operation.Post!, sp);
-        if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
-            return new ExplicitFormedVacuum();
-        ExplicitFormation tempMag = RetrieveExplicitDicho(formExplicitDichotomicOperation(RetrieveExplicitDicho(preFormation), RetrieveExplicitDicho(postFormation), operation.DichoOperator, operation.Negated));
+        // if (preFormation.Type == ExplicitType.VACUUM || postFormation.Type == ExplicitType.VACUUM)
+        //     return new ExplicitFormedVacuum();
+        ExplicitFormation tempMag = RetrieveExplicitDicho(formExplicitDichotomicOperation(preFormation, postFormation, operation.DichoOperator, operation.Negated));
         if (operation.TextOP)
             return RetrieveExplicitText(tempMag);
         return tempMag;        
@@ -62,7 +90,7 @@ public class Former
             return new ExplicitFormedVacuum();
         ExplicitFormation tempMag = RetrieveExplicitText(formExplicitTextOperation(RetrieveExplicitText(preFormation), RetrieveExplicitText(postFormation), operation.TextOperator));
         if (operation.Dichotomous)
-            return this.RetrieveExplicitDicho(tempMag);
+            return RetrieveExplicitDicho(tempMag);
         return tempMag;     
     }
     
@@ -95,7 +123,7 @@ public class Former
         };
     }
     
-    private ExplicitFormedDicho RetrieveExplicitDicho(ExplicitFormation form, bool negation=false)
+    private static ExplicitFormedDicho RetrieveExplicitDicho(ExplicitFormation form, bool negation=false)
     {
         ExplicitFormedDicho x = form.Type switch
         {
@@ -117,17 +145,36 @@ public class Former
         return x;
     }
     
-    private static ExplicitFormation formExplicitDichotomicOperation(ExplicitFormedDicho pre, ExplicitFormedDicho post, string operation, bool negation)
+    private ExplicitFormation formExplicitDichotomicOperation(ExplicitFormation pre, ExplicitFormation post, string operation, bool negation)
     {
+        // Console.WriteLine(retrieveExplicitMagnitude(pre).Magnitude);
         bool dichoFormed = operation switch
         {
-            "and" => pre.State && post.State,
-            "or" => pre.State || post.State,
+            "and" => RetrieveExplicitDicho(pre).State && RetrieveExplicitDicho(post).State,
+            "or" => RetrieveExplicitDicho(pre).State || RetrieveExplicitDicho(post).State,
+            "==" => performOptimalEquivalenceComp(pre, post),
+            "!=" => !performOptimalEquivalenceComp(pre, post),
+            ">>" => retrieveExplicitMagnitude(pre).Magnitude > retrieveExplicitMagnitude(post).Magnitude,
+            "<<" => retrieveExplicitMagnitude(pre).Magnitude < retrieveExplicitMagnitude(post).Magnitude,
+            ">=" => retrieveExplicitMagnitude(pre).Magnitude >= retrieveExplicitMagnitude(post).Magnitude,
+            "<=" => retrieveExplicitMagnitude(pre).Magnitude <= retrieveExplicitMagnitude(post).Magnitude,
             _ => throw new InvalidOperationException("Invalid operator")
         };
         return new ExplicitFormedDicho()
         {
             State = negation?!dichoFormed:dichoFormed
+        };
+    }
+
+    private static bool performOptimalEquivalenceComp(ExplicitFormation preForm, ExplicitFormation postForm)
+    {
+        const double TOLERANCE = 1e-6;
+        return (preForm.Type) switch
+        {
+            ExplicitType.MAGNITUDE => Math.Abs((preForm as ExplicitFormedMagnitude)!.Magnitude - retrieveExplicitMagnitude(postForm).Magnitude) < TOLERANCE,
+            ExplicitType.TEXT => (preForm as ExplicitFormedText)!.Text!.Trim('\u0022') == RetrieveExplicitText(postForm).Text!.Trim('\u0022'),
+            ExplicitType.DICHO => (preForm as ExplicitFormedDicho)!.State == RetrieveExplicitDicho(postForm).State,
+            ExplicitType.VACUUM => postForm.Type == ExplicitType.VACUUM
         };
     }
 
@@ -140,7 +187,7 @@ public class Former
             return new ExplicitFormedVacuum();
         ExplicitFormation tempMag = formExplicitMagnitudinalOperation(retrieveExplicitMagnitude(preFormation), retrieveExplicitMagnitude(postFormation), operation.MagnitudeOperator);
         if (operation.Dichotomous)
-            return this.RetrieveExplicitDicho(tempMag);
+            return RetrieveExplicitDicho(tempMag);
         if (operation.TextOP)
             return RetrieveExplicitText(tempMag);
         return tempMag;
@@ -196,8 +243,9 @@ public class Former
     
     private ExplicitFormation retrieveElement(Element element, Space sp)
     {
-        ExplicitFormation tempFormation = sp.retrieveElement(element.Symbol!);
-        return element.DichoNegated?this.RetrieveExplicitDicho(tempFormation, true):element.Dichotomous?this.RetrieveExplicitDicho(tempFormation):tempFormation;
+        return  sp.retrieveElement(element.Symbol!);
+        // ExplicitFormation tempFormation = sp.retrieveElement(element.Symbol!);
+        // return element.DichoNegated?RetrieveExplicitDicho(tempFormation, true):element.Dichotomous?RetrieveExplicitDicho(tempFormation):tempFormation;
     }
     
     private ExplicitFormation formElement(ElementSynthesis element, Space sp)
