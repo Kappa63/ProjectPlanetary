@@ -34,7 +34,7 @@ internal static class ProjectPlanetary
         //     });
         // }
 
-        string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/src.ps");
+        string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/PlanetaryTests/src.ps");
         former.formCompound(bonder.bondCompounds(system), space);
     }
 }
