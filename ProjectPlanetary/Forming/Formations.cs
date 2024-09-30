@@ -69,7 +69,7 @@ public class ExplicitFormedText : ExplicitFormation
     {
         return new ExplicitFormedMagnitude()
         {
-            Magnitude = Text!.Length
+            Magnitude = Text!.Length-2
         };
     }
 

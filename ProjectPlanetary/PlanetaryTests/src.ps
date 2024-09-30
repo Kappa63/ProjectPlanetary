@@ -78,7 +78,12 @@
 // eject.debug(h);
 // eject.out(h);
 
+stable synth a = [1, {hi: 34}, "23", |True or False|, Vacuum];
+eject.debug(a);
+eject.out(a);
 stable synth x = "hello";
+eject.out(x.count());
+eject.out(x.reverse());
 eject.out(x.toCluster());
 
 
