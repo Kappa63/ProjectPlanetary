@@ -13,11 +13,18 @@ public enum ExplicitType
     PRIME_PLANET,
     PLANET,
     CLUSTER,
+    EXO_PLANET
 }
 
 public abstract class ExplicitFormation
 {
     public abstract ExplicitType Type { get; }
+    protected Dictionary<string, ExplicitFormation> ExoPlanets { get; init; } = new Dictionary<string, ExplicitFormation>();
+
+    public bool TryGetExoPlanet(string planetSymbol, out ExplicitFormation? planet)
+    {
+        return ExoPlanets.TryGetValue(planetSymbol, out planet);
+    }
 }
 
 public class ExplicitFormedVacuum : ExplicitFormation
@@ -35,6 +42,39 @@ public class ExplicitFormedText : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.TEXT;
     public string? Text { get; init; }
+    
+    public ExplicitFormedText()
+    {
+        ExoPlanets = new Dictionary<string, ExplicitFormation>
+        {
+            { "count", new ExplicitFormedExoPlanet()
+            {
+                Payload = null,
+                Voyage = Count
+            }  },
+            { "reverse", new ExplicitFormedExoPlanet()
+            {
+                Payload = null,
+                Voyage = Reverse
+            } }
+        };
+    }
+
+    private ExplicitFormedMagnitude Count(object? _)
+    {
+        return new ExplicitFormedMagnitude()
+        {
+            Magnitude = Text!.Length
+        };
+    }
+
+    private ExplicitFormedText Reverse(object? _)
+    {
+        return new ExplicitFormedText()
+        {
+            Text =  new string(Text!.Reverse().ToArray())
+        };
+    }
 }
 
 public class ExplicitFormedDicho : ExplicitFormation
@@ -55,12 +95,17 @@ public class ExplicitFormedCluster : ExplicitFormation
     public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
 }
 
-// public delegate ExplicitFormation PlanetTrajectory(ExplicitFormation[] args, Space sp);
-
 public class ExplicitFormedPrimePlanet : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.PRIME_PLANET;
     public Func<List<ExplicitFormation>, Space, ExplicitFormation>? Voyage { get; init; }    
+}
+
+public class ExplicitFormedExoPlanet : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.EXO_PLANET;
+    public List<object?>? Payload { get; init; }
+    public Func<object?, ExplicitFormation>? Voyage { get; init; }    
 }
 
 public class ExplicitFormedPlanet : ExplicitFormation

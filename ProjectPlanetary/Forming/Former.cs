@@ -42,7 +42,7 @@ public class Former
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
         };
     }
-    
+
     private ExplicitFormation formProperFromExplicitMagnitude(ExplicitMagnitude mol)
     {
         ExplicitFormedMagnitude tempMag = new ExplicitFormedMagnitude() { Magnitude = mol.Magnitude };
@@ -272,16 +272,22 @@ public class Former
             PlanetSpace = sp
         }, true);
     } 
-
+    
     private ExplicitFormation retrieveAlloyTrajectory(AlloyTrajectoryOperation alloy, Space sp)
     {
-        ExplicitFormedAlloy tempAlloy = (this.formMolecule(alloy.Alloy!, sp) as ExplicitFormedAlloy)!;
-        string propName = (alloy.Property as Element)!.Symbol!;
-        if (tempAlloy.Properties.TryGetValue(propName, out var trajectory))
-            return trajectory;
-        throw new ArgumentException($"Property {propName} not found in alloy");
+        ExplicitFormation formedType = this.formMolecule(alloy.Alloy!, sp);
+        if (formedType.Type == ExplicitType.ALLOY)
+        {
+            ExplicitFormedAlloy tempAlloy = (formedType as ExplicitFormedAlloy)!;
+            string propName = (alloy.Property as Element)!.Symbol!;
+            if (tempAlloy.Properties.TryGetValue(propName, out var trajectory))
+                return trajectory;
+            throw new ArgumentException($"Property {propName} not found in alloy");
+        }
+        formedType.TryGetExoPlanet((alloy.Property as Element)!.Symbol!, out ExplicitFormation? planet);
+        return planet!;
     }
-
+    
     private ExplicitFormation formPlanetaryVoyage(VoyageOperation voyage, Space sp)
     {
         List<ExplicitFormation> formedPayload  = voyage.Payload.ConvertAll(load => this.formMolecule(load, sp));
@@ -289,6 +295,11 @@ public class Former
 
         if (planet.Type == ExplicitType.PRIME_PLANET)
             return (planet as ExplicitFormedPrimePlanet)!.Voyage!(formedPayload, sp);
+        if (planet.Type == ExplicitType.EXO_PLANET)
+        {
+            ExplicitFormedExoPlanet tempExoPlanet = (planet as ExplicitFormedExoPlanet)!;
+            return tempExoPlanet.Voyage!(tempExoPlanet.Payload);
+        }
         if (planet.Type == ExplicitType.PLANET)
         {
             ExplicitFormedPlanet tempPlanet = (planet as ExplicitFormedPlanet)!;

@@ -49,7 +49,6 @@ public class LawSynthesis : Molecule
     public override MoleculeType Type { get; } = MoleculeType.LAW_SYNTHESIS;
     public Operation? LawDicho  { get; init; }
     public bool Validator = true;
-    public bool Cycler = false;
     public bool Orbiter = false;
     public Compound? LawCompound { get; init; }
 }

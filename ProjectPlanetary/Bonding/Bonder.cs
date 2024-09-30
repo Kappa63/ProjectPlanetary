@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.VisualBasic.FileIO;
 
 namespace ProjectPlanetary.Bonding;
@@ -82,7 +81,6 @@ public class Bonder
         this.retrieveAtom(true, AtomType.DICHO_ENCLOSURE);
         Atom curAtom = this.retrieveAtom(false);
         bool validation = true;
-        bool cyclic = false;
         bool orbital = false;
         while (checkHorizon() && curAtom.Type != AtomType.OPEN_CURLED_ENCLOSURE)
         {
@@ -93,9 +91,6 @@ public class Bonder
                     break;
                 case AtomType.LAW_INVALIDATOR:
                     validation = false;
-                    break;
-                case AtomType.LAW_CYCLER:
-                    cyclic = true;
                     break;
                 case AtomType.LAW_ORBITER:
                     orbital = true;
@@ -118,7 +113,6 @@ public class Bonder
         {
             LawDicho = tempDichoOp,
             Validator = validation,
-            Cycler = cyclic,
             Orbiter = orbital,
             LawCompound = planetCompound
         };

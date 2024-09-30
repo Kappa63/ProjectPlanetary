@@ -43,7 +43,7 @@ public enum AtomType {
     LAW_SYNTHESIZER,
     LAW_VALIDATOR,
     LAW_INVALIDATOR,
-    LAW_CYCLER,
+    CLUSTER_TRAVERSER,
     LAW_ORBITER,
     
     DARK_MATTER,
@@ -74,7 +74,7 @@ public static class Reactor
         { "law", AtomType.LAW_SYNTHESIZER },
         { "valid", AtomType.LAW_VALIDATOR },
         { "invalid", AtomType.LAW_INVALIDATOR },
-        { "cycle", AtomType.LAW_CYCLER },
+        { "traverse", AtomType.CLUSTER_TRAVERSER },
         { "orbit", AtomType.LAW_ORBITER},
         // { "vacuum", AtomType.VACUUM }
     };
