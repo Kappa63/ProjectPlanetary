@@ -13,7 +13,7 @@ public enum ExplicitType
     PRIME_PLANET,
     PLANET,
     CLUSTER,
-    EXO_PLANET
+    MOON
 }
 
 public abstract class ExplicitFormation
@@ -47,15 +47,20 @@ public class ExplicitFormedText : ExplicitFormation
     {
         ExoPlanets = new Dictionary<string, ExplicitFormation>
         {
-            { "count", new ExplicitFormedExoPlanet()
+            { "count", new ExplicitFormedMoon()
             {
                 Payload = null,
                 Voyage = Count
             }  },
-            { "reverse", new ExplicitFormedExoPlanet()
+            { "reverse", new ExplicitFormedMoon()
             {
                 Payload = null,
                 Voyage = Reverse
+            } },
+            { "toCluster", new ExplicitFormedMoon()
+            {
+                Payload = null,
+                Voyage = ToCluster
             } }
         };
     }
@@ -73,6 +78,14 @@ public class ExplicitFormedText : ExplicitFormation
         return new ExplicitFormedText()
         {
             Text =  new string(Text!.Reverse().ToArray())
+        };
+    }
+    
+    private ExplicitFormedCluster ToCluster(object? _)
+    {
+        return new ExplicitFormedCluster()
+        {
+            Forms =  Text!.Trim('"').ToArray().Select(ExplicitFormation (c) => new ExplicitFormedText(){Text = "'"+c+"'"}).ToList()
         };
     }
 }
@@ -101,9 +114,9 @@ public class ExplicitFormedPrimePlanet : ExplicitFormation
     public Func<List<ExplicitFormation>, Space, ExplicitFormation>? Voyage { get; init; }    
 }
 
-public class ExplicitFormedExoPlanet : ExplicitFormation
+public class ExplicitFormedMoon : ExplicitFormation
 {
-    public override ExplicitType Type { get; } = ExplicitType.EXO_PLANET;
+    public override ExplicitType Type { get; } = ExplicitType.MOON;
     public List<object?>? Payload { get; init; }
     public Func<object?, ExplicitFormation>? Voyage { get; init; }    
 }

@@ -36,7 +36,7 @@ public static class Planets
             ExplicitType.PRIME_PLANET => "{\"Type\":5, \"Atom\":PRIME_PLANET}",
             ExplicitType.PLANET => "{\"Type\":6, \"Atom\":PLANET}",
             ExplicitType.CLUSTER => "{\"Type\":7, \"Formations\":"+"["+string.Join(", ", (form as ExplicitFormedCluster)!.Forms.Select(getDebugText))+"]}",
-            ExplicitType.EXO_PLANET => "{\"Type\":8, \"Atom\":EXO_PLANET}",
+            ExplicitType.MOON => "{\"Type\":8, \"Atom\":MOON}",
             _ => JsonSerializer.Serialize(form as ExplicitFormedVacuum)
         };
     }
@@ -52,7 +52,7 @@ public static class Planets
             ExplicitType.TEXT => (form as ExplicitFormedText)!.Text!.Trim('"'),
             ExplicitType.PRIME_PLANET => "PRIME_PLANET",
             ExplicitType.PLANET => "PLANET",
-            ExplicitType.EXO_PLANET => "EXO_PLANET",
+            ExplicitType.MOON => "MOON",
             ExplicitType.CLUSTER => "[" + string.Join(", ",
                 (form as ExplicitFormedCluster)!.Forms.Select(getOutText)) + "]",
             _ => "Vacuum"

@@ -295,10 +295,10 @@ public class Former
 
         if (planet.Type == ExplicitType.PRIME_PLANET)
             return (planet as ExplicitFormedPrimePlanet)!.Voyage!(formedPayload, sp);
-        if (planet.Type == ExplicitType.EXO_PLANET)
+        if (planet.Type == ExplicitType.MOON)
         {
-            ExplicitFormedExoPlanet tempExoPlanet = (planet as ExplicitFormedExoPlanet)!;
-            return tempExoPlanet.Voyage!(tempExoPlanet.Payload);
+            ExplicitFormedMoon tempMoon = (planet as ExplicitFormedMoon)!;
+            return tempMoon.Voyage!(tempMoon.Payload);
         }
         if (planet.Type == ExplicitType.PLANET)
         {
