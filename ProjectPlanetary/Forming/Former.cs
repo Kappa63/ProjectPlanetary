@@ -36,6 +36,7 @@ public class Former
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
             MoleculeType.TEXT_OPERATION => this.formTextOperation((mol as TextOperation)!, sp),
             MoleculeType.EXPLICIT_ALLOY => formAlloy((mol as ExplicitAlloy)!, sp),
+            MoleculeType.EXPLICIT_CLUSTER => formCluster((mol as ExplicitCluster)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
             MoleculeType.ALLOY_TRAJECTORY_OPERATION => this.retrieveAlloyTrajectory((mol as AlloyTrajectoryOperation)!, sp),
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
@@ -239,6 +240,14 @@ public class Former
         foreach (Property p in alloy.Properties)
             formedAlloy.Properties.Add(p.Symbol!, p.Magnitude!=null?this.formMolecule(p.Magnitude, sp):new ExplicitFormedVacuum()); //sp.retrieveElement(p.Symbol!)
         return formedAlloy;
+    }
+    
+    private ExplicitFormation formCluster(ExplicitCluster cluster, Space sp)
+    {
+        ExplicitFormedCluster formedCluster = new ExplicitFormedCluster();
+        foreach (Operation o in cluster.Operations)
+            formedCluster.Forms.Add(this.formMolecule(o, sp)); //sp.retrieveElement(p.Symbol!)
+        return formedCluster;
     }
     
     private ExplicitFormation retrieveElement(Element element, Space sp)

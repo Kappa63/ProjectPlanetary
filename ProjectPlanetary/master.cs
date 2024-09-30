@@ -6,7 +6,6 @@ internal static class ProjectPlanetary
     public static void Main()
     {
         Bonding.Bonder bonder = new Bonding.Bonder();
-        Bonding.Bonder2 bonder2 = new Bonding.Bonder2();
         Space space = new Space();
         Forming.Former former = new Forming.Former();
         Console.WriteLine("\nPlanetary v0.1");
@@ -35,7 +34,7 @@ internal static class ProjectPlanetary
         //     });
         // }
 
-        string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/calc.ps");
-        former.formCompound(bonder2.bondCompounds(system), space);
+        string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/src.ps");
+        former.formCompound(bonder.bondCompounds(system), space);
     }
 }

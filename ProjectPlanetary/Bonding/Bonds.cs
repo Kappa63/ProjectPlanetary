@@ -19,6 +19,7 @@ public enum MoleculeType
     ELEMENT,
     PROPERTY,
     EXPLICIT_ALLOY,
+    EXPLICIT_CLUSTER,
     MAGNITUDINAL_OPERATION,
     DICHOTOMIC_OPERATION,
     TEXT_OPERATION
@@ -126,6 +127,12 @@ public class ExplicitAlloy : Operation
 {
     public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_ALLOY;
     public List<Property> Properties { get; init; } = new List<Property>();
+}
+
+public class ExplicitCluster : Operation
+{
+    public override MoleculeType Type { get; } = MoleculeType.EXPLICIT_CLUSTER;
+    public List<Operation> Operations { get; init; } = new List<Operation>();
 }
 
 public class ExplicitMagnitude : Operation

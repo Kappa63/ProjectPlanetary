@@ -12,7 +12,7 @@ public enum ExplicitType
     ALLOY,
     PRIME_PLANET,
     PLANET,
-    LAW
+    CLUSTER,
 }
 
 public abstract class ExplicitFormation
@@ -47,6 +47,12 @@ public class ExplicitFormedAlloy : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.ALLOY;
     public Dictionary<string, ExplicitFormation> Properties { get; init; } = new Dictionary<string, ExplicitFormation>();
+}
+
+public class ExplicitFormedCluster : ExplicitFormation
+{
+    public override ExplicitType Type { get; } = ExplicitType.CLUSTER;
+    public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
 }
 
 // public delegate ExplicitFormation PlanetTrajectory(ExplicitFormation[] args, Space sp);
