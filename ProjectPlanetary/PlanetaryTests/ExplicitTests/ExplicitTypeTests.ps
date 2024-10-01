@@ -1,0 +1,15 @@
+stable synth x = "hello";
+eject.out(x.count());
+eject.out(x.reverse());
+eject.out(x.toCluster());
+
+synth n = <"hi"..3..True.."jo">;
+eject.out(n);
+n = 1 + "hi" + True;
+eject.out(n);
+n = <"hi "..(4+2).." "..|True or False|>;
+eject.out(n);
+n = <True>;
+eject.debug(n);
+n = <|True and False|>;
+eject.debug(n);

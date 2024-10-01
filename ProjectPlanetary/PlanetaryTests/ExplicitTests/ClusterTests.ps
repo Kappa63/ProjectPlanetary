@@ -1,0 +1,15 @@
+stable synth h = [4, 3, 2, "ji", True, |False or True|];
+eject.debug(h);
+eject.out(h);
+
+stable synth a = [1, {hi: 34}, "23", |True or False|, Vacuum];
+eject.debug(a);
+eject.out(a);
+
+traverse h:i {
+    eject.out(i);
+};
+eject.out("----");
+traverse a:i {
+    eject.out(i);
+};

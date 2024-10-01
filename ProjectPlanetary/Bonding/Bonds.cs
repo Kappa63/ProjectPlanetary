@@ -6,6 +6,7 @@ public enum MoleculeType
     ELEMENT_SYNTHESIS,
     PLANET_SYNTHESIS,
     LAW_SYNTHESIS,
+    TRAVERSE_SYNTHESIS,
     ELEMENT_MODIFICATION,
     
     ALLOY_TRAJECTORY_OPERATION,
@@ -51,6 +52,14 @@ public class LawSynthesis : Molecule
     public bool Validator = true;
     public bool Orbiter = false;
     public Compound? LawCompound { get; init; }
+}
+
+public class TraverseSynthesis : Molecule
+{
+    public override MoleculeType Type { get; } = MoleculeType.TRAVERSE_SYNTHESIS;
+    public Operation? ClusterLike {get; init; } 
+    public string? Symbol {get; init; }
+    public Compound? TraverseCompound { get; init; }
 }
 
 public class ElementSynthesis : Molecule

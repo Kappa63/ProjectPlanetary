@@ -1,0 +1,27 @@
+law |True and False| valid  {
+    eject.out("law 1");
+};
+
+law |True and False| invalid  {
+    eject.out("law 2");
+};
+
+law |True or False| valid  {
+    eject.out("law 3");
+};
+
+law |True or False| invalid  {
+    eject.out("law 4");
+};
+
+synth h = 5;
+
+law |h| valid orbit {
+    eject.out(h);
+    h = h-1;
+};
+
+law |h| invalid orbit {
+    eject.out(h);
+    h = h+1;
+};

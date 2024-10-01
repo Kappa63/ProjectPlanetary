@@ -19,11 +19,11 @@ public enum ExplicitType
 public abstract class ExplicitFormation
 {
     public abstract ExplicitType Type { get; }
-    protected Dictionary<string, ExplicitFormation> ExoPlanets { get; init; } = new Dictionary<string, ExplicitFormation>();
+    protected Dictionary<string, ExplicitFormation> Moons { get; init; } = new Dictionary<string, ExplicitFormation>();
 
-    public bool TryGetExoPlanet(string planetSymbol, out ExplicitFormation? planet)
+    public bool TryGetMoon(string planetSymbol, out ExplicitFormation? planet)
     {
-        return ExoPlanets.TryGetValue(planetSymbol, out planet);
+        return Moons.TryGetValue(planetSymbol, out planet);
     }
 }
 
@@ -45,7 +45,7 @@ public class ExplicitFormedText : ExplicitFormation
     
     public ExplicitFormedText()
     {
-        ExoPlanets = new Dictionary<string, ExplicitFormation>
+        Moons = new Dictionary<string, ExplicitFormation>
         {
             { "count", new ExplicitFormedMoon()
             {

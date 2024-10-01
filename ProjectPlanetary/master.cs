@@ -27,8 +27,17 @@ internal static class ProjectPlanetary
         //         _=>JsonSerializer.Serialize(frm as ExplicitFormedVacuum)
         //     });
         // }
-
-        string system = File.ReadAllText("/home/karim/Desktop/Prog/RiderProjects/ProjectPlanetary/ProjectPlanetary/PlanetaryTests/src.ps");
-        former.formCompound(bonder.bondCompounds(system), space);
+        
+        string[] testFiles = Directory.GetFiles("../../../PlanetaryTests/ExplicitTests/", "*.ps");
+        foreach (string testFile in testFiles)
+        {
+            Console.WriteLine(testFile);
+            string system = File.ReadAllText(testFile);
+            former.formCompound(bonder.bondCompounds(system), new Space());
+            Console.WriteLine("===========================");
+        }
+        
+        // string system = File.ReadAllText("../../../PlanetaryTests/src.ps");
+        // former.formCompound(bonder.bondCompounds(system), space);
     }
 }

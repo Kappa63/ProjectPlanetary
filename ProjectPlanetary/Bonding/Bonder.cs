@@ -19,6 +19,19 @@ public class Bonder
 
         return compound;
     }
+
+    private Compound bondEnclosedCompound()
+    {
+        this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
+        Compound tempCompound = new Compound();
+        while (this.checkHorizon() && this.retrieveAtom(false).Type != AtomType.CLOSE_CURLED_ENCLOSURE)
+        {
+            tempCompound.Molecules.Add(this.bondMolecule());
+            this.retrieveAtom(true, AtomType.POLE);
+        }
+        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
+        return tempCompound;
+    }
     
     private bool checkHorizon()
     {
@@ -41,10 +54,11 @@ public class Bonder
         {
             AtomType.ELEMENT_SYNTHESIZER or AtomType.ELEMENT_STABILIZER => this.bondElementSynthesis(),
             AtomType.LAW_SYNTHESIZER => this.bondLawSynthesis(),
+            AtomType.CLUSTER_TRAVERSER => this.bondClusterTraverser(),
             _ => this.bondOperation()
         };
     }
-
+    
     private Molecule bondElementSynthesis()
     {
         Atom tempAtom = this.retrieveAtom(true);
@@ -98,23 +112,28 @@ public class Bonder
             }
             curAtom = this.retrieveAtom(false);
         }
-        this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
-        Compound planetCompound = new Compound();
-        curAtom = this.retrieveAtom(false);
-        while (this.checkHorizon() && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
-        {
-            planetCompound.Molecules.Add(this.bondMolecule());
-            this.retrieveAtom(true, AtomType.POLE);
-            curAtom = this.retrieveAtom(false);
-        }
-        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
-
+        Compound lawCompound = bondEnclosedCompound();
         return new LawSynthesis()
         {
             LawDicho = tempDichoOp,
             Validator = validation,
             Orbiter = orbital,
-            LawCompound = planetCompound
+            LawCompound = lawCompound
+        };
+    }
+
+    private Molecule bondClusterTraverser()
+    {
+        this.retrieveAtom(true);
+        Operation tempCluster = this.bondOperation();
+        this.retrieveAtom(true, AtomType.CONDUIT);
+        string tempElementSymbol = this.retrieveAtom(true, AtomType.ELEMENT).Value;
+        Compound traverseCompound = bondEnclosedCompound();
+        return new TraverseSynthesis()
+        {
+            ClusterLike = tempCluster,
+            Symbol = tempElementSymbol,
+            TraverseCompound = traverseCompound
         };
     }
 
@@ -126,16 +145,7 @@ public class Bonder
             load.Type == MoleculeType.ELEMENT
                 ? (load as Element)!.Symbol!
                 : throw new Exception("Expected Elements for Payload"));
-        this.retrieveAtom(true, AtomType.OPEN_CURLED_ENCLOSURE);
-        Compound planetCompound = new Compound();
-        Atom curAtom = this.retrieveAtom(false);
-        while (this.checkHorizon() && curAtom.Type != AtomType.CLOSE_CURLED_ENCLOSURE)
-        {
-            planetCompound.Molecules.Add(this.bondMolecule());
-            this.retrieveAtom(true, AtomType.POLE);
-            curAtom = this.retrieveAtom(false);
-        }
-        this.retrieveAtom(true, AtomType.CLOSE_CURLED_ENCLOSURE);
+        Compound planetCompound = bondEnclosedCompound();
         return new PlanetSynthesis()
         {
             Symbol = tempSymbol,

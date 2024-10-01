@@ -32,6 +32,7 @@ public class Former
             MoleculeType.ELEMENT_SYNTHESIS => formElement((mol as ElementSynthesis)!, sp),
             MoleculeType.PLANET_SYNTHESIS => formPlanet((mol as PlanetSynthesis)!, sp),
             MoleculeType.LAW_SYNTHESIS => formLaw((mol as LawSynthesis)!, sp),
+            MoleculeType.TRAVERSE_SYNTHESIS => formTraverser((mol as TraverseSynthesis)!, sp),
             MoleculeType.ELEMENT_MODIFICATION => formElementModificationOperation((mol as ElementModification)!, sp),
             MoleculeType.DICHOTOMIC_OPERATION => this.formDichotomicOperation((mol as DichotomicOperation)!, sp),
             MoleculeType.TEXT_OPERATION => this.formTextOperation((mol as TextOperation)!, sp),
@@ -284,7 +285,7 @@ public class Former
                 return trajectory;
             throw new ArgumentException($"Property {propName} not found in alloy");
         }
-        formedType.TryGetExoPlanet((alloy.Property as Element)!.Symbol!, out ExplicitFormation? planet);
+        formedType.TryGetMoon((alloy.Property as Element)!.Symbol!, out ExplicitFormation? planet);
         return planet!;
     }
     
@@ -324,6 +325,19 @@ public class Former
             else break;
         while (law.Orbiter);
         
+        return tempForm;
+    }
+    
+    private ExplicitFormation formTraverser(TraverseSynthesis traverser, Space sp)
+    {
+        Space traverseSpace = new Space(sp);
+        ExplicitFormation tempForm = new ExplicitFormedVacuum();
+        traverseSpace.synthesizeElement(traverser.Symbol!, new ExplicitFormedVacuum(), false);
+        foreach (ExplicitFormation form in (formMolecule(traverser.ClusterLike!, sp) as ExplicitFormedCluster)!.Forms)
+        {
+            traverseSpace.modifyElement(traverser.Symbol!, form);
+            tempForm = this.formCompound(traverser.TraverseCompound!, traverseSpace);
+        }
         return tempForm;
     }
 }

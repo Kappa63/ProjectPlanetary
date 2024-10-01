@@ -1,0 +1,31 @@
+synth planet printer(x,y,z){
+    eject.out(x,y,z);
+};
+
+synth planet add(a, b) {
+    a+b;
+};
+synth planet sub(a, b) {
+    a-b;
+};
+synth planet mul(a, b) {
+    a*b;
+};
+synth planet div(a, b) {
+    a/b;
+};
+synth planet rem(a, b) {
+    a%b;
+};
+
+synth planet calcResults(x, y) {
+    eject.out("Addition Result: ", add(x, y));
+    eject.out("Subtraction Result: ", sub(x, y));
+    eject.out("Multiplication Result: ", mul(x, y));
+    eject.out("Division Result: ", div(x, y));
+    eject.out("Remainder Result: ", rem(x, y));
+};
+
+printer(9, True, Vacuum);
+eject.out("----");
+calcResults(2, 7);
