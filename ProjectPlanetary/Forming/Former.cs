@@ -299,7 +299,7 @@ public class Former
         if (planet.Type == ExplicitType.MOON)
         {
             ExplicitFormedMoon tempMoon = (planet as ExplicitFormedMoon)!;
-            return tempMoon.Voyage!(tempMoon.Payload);
+            return tempMoon.Voyage!(formedPayload);
         }
         if (planet.Type == ExplicitType.PLANET)
         {

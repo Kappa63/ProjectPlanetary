@@ -1,11 +1,5 @@
 synth a = [1, 2, 3, "hi"];
 
-traverse a:i {
-    eject.out(i);
-};
-
-a = "hey test";
-
-traverse a.toCluster():i{
-    eject.out(i);
-};
+eject.out(a);
+a.add(5,6,10);
+eject.out(a);

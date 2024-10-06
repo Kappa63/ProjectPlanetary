@@ -28,16 +28,16 @@ internal static class ProjectPlanetary
         //     });
         // }
         
-        string[] testFiles = Directory.GetFiles("../../../PlanetaryTests/ExplicitTests/", "*.ps");
-        foreach (string testFile in testFiles)
-        {
-            Console.WriteLine(testFile);
-            string system = File.ReadAllText(testFile);
-            former.formCompound(bonder.bondCompounds(system), new Space());
-            Console.WriteLine("===========================");
-        }
+        // string[] testFiles = Directory.GetFiles("../../../PlanetaryTests/ExplicitTests/", "*.ps");
+        // foreach (string testFile in testFiles)
+        // {
+        //     Console.WriteLine(testFile);
+        //     string system = File.ReadAllText(testFile);
+        //     former.formCompound(bonder.bondCompounds(system), new Space());
+        //     Console.WriteLine("===========================");
+        // }
         
-        // string system = File.ReadAllText("../../../PlanetaryTests/src.ps");
-        // former.formCompound(bonder.bondCompounds(system), space);
+        string system = File.ReadAllText("../../../PlanetaryTests/src.ps");
+        former.formCompound(bonder.bondCompounds(system), space);
     }
 }

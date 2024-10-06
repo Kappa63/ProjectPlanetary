@@ -49,23 +49,24 @@ public class ExplicitFormedText : ExplicitFormation
         {
             { "count", new ExplicitFormedMoon()
             {
-                Payload = null,
                 Voyage = Count
             }  },
             { "reverse", new ExplicitFormedMoon()
             {
-                Payload = null,
                 Voyage = Reverse
             } },
             { "toCluster", new ExplicitFormedMoon()
             {
-                Payload = null,
                 Voyage = ToCluster
+            } },
+            { "shrink", new ExplicitFormedMoon()
+            {
+                Voyage = Shrink
             } }
         };
     }
 
-    private ExplicitFormedMagnitude Count(object? _)
+    private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
     {
         return new ExplicitFormedMagnitude()
         {
@@ -73,7 +74,7 @@ public class ExplicitFormedText : ExplicitFormation
         };
     }
 
-    private ExplicitFormedText Reverse(object? _)
+    private ExplicitFormedText Reverse(List<ExplicitFormation>? _)
     {
         return new ExplicitFormedText()
         {
@@ -81,12 +82,28 @@ public class ExplicitFormedText : ExplicitFormation
         };
     }
     
-    private ExplicitFormedCluster ToCluster(object? _)
+    private ExplicitFormedCluster ToCluster(List<ExplicitFormation>? _)
     {
         return new ExplicitFormedCluster()
         {
             Forms =  Text!.Trim('"').ToArray().Select(ExplicitFormation (c) => new ExplicitFormedText(){Text = "'"+c+"'"}).ToList()
         };
+    }
+    
+    private ExplicitFormedText Shrink(List<ExplicitFormation>? payload)
+    {
+        if (payload is { Count: 2 } && payload[0].Type == ExplicitType.MAGNITUDE &&
+            payload[1].Type == ExplicitType.MAGNITUDE)
+        {
+            int start = (int)(payload[0] as ExplicitFormedMagnitude)!.Magnitude + 1;
+            return new ExplicitFormedText()
+            {
+                Text = string.Concat("\"",
+                    Text!.Substring(start, ((int)(payload[1] as ExplicitFormedMagnitude)!.Magnitude + 1)-start), "\"")
+            };
+        }
+
+        throw new ArgumentException("Expected payload to consist of magnitudes.");
     }
 }
 
@@ -106,6 +123,36 @@ public class ExplicitFormedCluster : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.CLUSTER;
     public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
+    
+    public ExplicitFormedCluster()
+    {
+        Moons = new Dictionary<string, ExplicitFormation>
+        {
+            { "count", new ExplicitFormedMoon()
+            {
+                Voyage = Count
+            } },
+            { "add", new ExplicitFormedMoon()
+            {
+                Voyage = Add
+            } },
+        };
+    }
+
+    private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
+    {
+        return new ExplicitFormedMagnitude()
+        {
+            Magnitude = Forms.Count
+        };
+    }
+    
+    private ExplicitFormedVacuum Add(List<ExplicitFormation>? forms)
+    {
+        if (forms is not {Count:0})
+            Forms.AddRange(forms!);
+        return new ExplicitFormedVacuum();
+    }
 }
 
 public class ExplicitFormedPrimePlanet : ExplicitFormation
@@ -117,8 +164,8 @@ public class ExplicitFormedPrimePlanet : ExplicitFormation
 public class ExplicitFormedMoon : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.MOON;
-    public List<object?>? Payload { get; init; }
-    public Func<object?, ExplicitFormation>? Voyage { get; init; }    
+    // public List<object?>? Payload { get; init; }
+    public Func<List<ExplicitFormation>?, ExplicitFormation>? Voyage { get; init; }    
 }
 
 public class ExplicitFormedPlanet : ExplicitFormation
