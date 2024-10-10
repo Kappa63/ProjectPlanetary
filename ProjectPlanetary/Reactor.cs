@@ -40,6 +40,7 @@ public enum AtomType {
     ELEMENT_SYNTHESIZER,
     ELEMENT_STABILIZER,
     PLANET_SYNTHESIZER,
+    LINK_CREATOR,
     LAW_SYNTHESIZER,
     LAW_VALIDATOR,
     LAW_INVALIDATOR,
@@ -76,6 +77,7 @@ public static class Reactor
         { "invalid", AtomType.LAW_INVALIDATOR },
         { "traverse", AtomType.CLUSTER_TRAVERSER },
         { "orbit", AtomType.LAW_ORBITER},
+        { "link", AtomType.LINK_CREATOR },
         // { "vacuum", AtomType.VACUUM }
     };
 
@@ -112,7 +114,7 @@ public static class Reactor
     public static List<Atom> Fission(string system)
     {
         List<Atom> atoms = new List<Atom>();
-        MatchCollection matches = Regex.Matches(Regex.Replace(system, "(?<NOTE>//.*\n)|", ""), Isotope);
+        MatchCollection matches = Regex.Matches(Regex.Replace(system, @"//.*\Z", ""), Isotope);
         int compoundNumber = 1;
         int atomNumber = 0;
         foreach (Match match in matches)

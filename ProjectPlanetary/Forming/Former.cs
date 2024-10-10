@@ -40,6 +40,7 @@ public class Former
             MoleculeType.EXPLICIT_CLUSTER => formCluster((mol as ExplicitCluster)!, sp),
             MoleculeType.COMPOUND => this.formCompound((mol as Compound)!, sp),
             MoleculeType.ALLOY_TRAJECTORY_OPERATION => this.retrieveAlloyTrajectory((mol as AlloyTrajectoryOperation)!, sp),
+            MoleculeType.LINK_CREATION => this.retrieveLinkedSystem((mol as LinkCreation)!, sp),
             _ => throw new NotImplementedException("This Molecule type is not implemented yet.")
         };
     }
@@ -339,5 +340,12 @@ public class Former
             tempForm = this.formCompound(traverser.TraverseCompound!, traverseSpace);
         }
         return tempForm;
+    }
+
+    private ExplicitFormation retrieveLinkedSystem(LinkCreation link, Space sp)
+    {
+        string system = File.ReadAllText((formMolecule(link.SystemSymbol!, sp) as ExplicitFormedText)!.Text!.Trim('"'));
+        ProjectPlanetary.former.formCompound(ProjectPlanetary.bonder.bondCompounds(system), ProjectPlanetary.space);
+        return new ExplicitFormedVacuum();
     }
 }

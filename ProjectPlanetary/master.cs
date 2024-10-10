@@ -1,13 +1,14 @@
 using ProjectPlanetary.Singularity;
 
 namespace ProjectPlanetary;
-internal static class ProjectPlanetary
+static class ProjectPlanetary
 {
+    public static readonly Bonding.Bonder bonder = new Bonding.Bonder();
+    public static readonly Space space = new Space();
+    public static readonly Forming.Former former = new Forming.Former();
+    
     public static void Main()
     {
-        Bonding.Bonder bonder = new Bonding.Bonder();
-        Space space = new Space();
-        Forming.Former former = new Forming.Former();
         Console.WriteLine("\nPlanetary v0.11");
         
         // REPL

@@ -8,6 +8,7 @@ public enum MoleculeType
     LAW_SYNTHESIS,
     TRAVERSE_SYNTHESIS,
     ELEMENT_MODIFICATION,
+    LINK_CREATION,
     
     ALLOY_TRAJECTORY_OPERATION,
     VOYAGE_OPERATION,
@@ -70,6 +71,11 @@ public class ElementSynthesis : Molecule
     public Operation? Magnitude { get; init; }
 }
 
+public class LinkCreation : Molecule
+{
+    public override MoleculeType Type { get; } = MoleculeType.LINK_CREATION;
+    public Operation? SystemSymbol { get; init; }
+}
 
 public abstract class Operation : Molecule
 {

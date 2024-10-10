@@ -55,6 +55,7 @@ public class Bonder
             AtomType.ELEMENT_SYNTHESIZER or AtomType.ELEMENT_STABILIZER => this.bondElementSynthesis(),
             AtomType.LAW_SYNTHESIZER => this.bondLawSynthesis(),
             AtomType.CLUSTER_TRAVERSER => this.bondClusterTraverser(),
+            AtomType.LINK_CREATOR => this.bondLinkCreation(),
             _ => this.bondOperation()
         };
     }
@@ -134,6 +135,16 @@ public class Bonder
             ClusterLike = tempCluster,
             Symbol = tempElementSymbol,
             TraverseCompound = traverseCompound
+        };
+    }
+    
+    private Molecule bondLinkCreation()
+    {
+        this.retrieveAtom(true);
+        Operation tempOp = this.bondOperation();
+        return new LinkCreation()
+        {
+            SystemSymbol = tempOp,
         };
     }
 
