@@ -323,7 +323,12 @@ public class Former
         do
             if (RetrieveExplicitDicho(this.formMolecule(law.LawDicho!, lawSpace), !law.Validator).State)
                 tempForm = this.formCompound(law.LawCompound!, lawSpace);
-            else break;
+            else
+            {
+                if (law.OtherLaw != null)
+                    tempForm = this.formCompound(law.OtherLaw, lawSpace);
+                break;
+            }
         while (law.Orbiter);
         
         return tempForm;

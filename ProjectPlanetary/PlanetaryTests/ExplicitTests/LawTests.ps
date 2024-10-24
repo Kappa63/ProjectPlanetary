@@ -19,9 +19,19 @@ synth h = 5;
 law |h| valid orbit {
     eject.out(h);
     h = h-1;
+} other {
+    eject.out("Empty other after orbit");
 };
 
 law |h| invalid orbit {
     eject.out(h);
     h = h+1;
+};
+
+law |h >> 5| valid {
+    eject.out("hi1");
+} other law |h << 5| valid {
+    eject.out("hi2");
+} other {
+    eject.out("hi3");
 };

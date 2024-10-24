@@ -53,6 +53,7 @@ public class LawSynthesis : Molecule
     public bool Validator = true;
     public bool Orbiter = false;
     public Compound? LawCompound { get; init; }
+    public Compound? OtherLaw {get; init; }
 }
 
 public class TraverseSynthesis : Molecule

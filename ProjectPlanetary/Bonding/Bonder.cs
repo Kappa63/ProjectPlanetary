@@ -114,12 +114,19 @@ public class Bonder
             curAtom = this.retrieveAtom(false);
         }
         Compound lawCompound = bondEnclosedCompound();
+        Compound? otherLaw = null;
+        if (this.retrieveAtom(false).Type == AtomType.OTHER)
+        {
+            this.retrieveAtom(true);
+            otherLaw = this.retrieveAtom(false).Type == AtomType.LAW_SYNTHESIZER ? new Compound() { Molecules = {this.bondLawSynthesis()} } : this.bondEnclosedCompound();
+        }
         return new LawSynthesis()
         {
             LawDicho = tempDichoOp,
             Validator = validation,
             Orbiter = orbital,
-            LawCompound = lawCompound
+            LawCompound = lawCompound,
+            OtherLaw = otherLaw
         };
     }
 

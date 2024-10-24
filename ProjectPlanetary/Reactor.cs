@@ -6,10 +6,6 @@ public enum AtomType {
     MAGNITUDE,
     ELEMENT,
     EQUIVALENCE,
-    // EXCEEDS,
-    // EQUATES,
-    // UNEQUATES,
-    // RECEDES, 
     COMP_OPERATOR,
     NEGATER,
     CONJUNCTOR,
@@ -28,7 +24,6 @@ public enum AtomType {
     
     TEXT,
     
-    // MAGNITUDE_OPERATIONS,
     SIGMA_OPERATOR,
     PI_OPERATOR,
     
@@ -36,6 +31,7 @@ public enum AtomType {
     LINKER,
     SEPARATOR,
     POLE,
+    OTHER,
     
     ELEMENT_SYNTHESIZER,
     ELEMENT_STABILIZER,
@@ -77,6 +73,7 @@ public static class Reactor
         { "invalid", AtomType.LAW_INVALIDATOR },
         { "traverse", AtomType.CLUSTER_TRAVERSER },
         { "orbit", AtomType.LAW_ORBITER},
+        { "other", AtomType.OTHER},
         { "link", AtomType.LINK_CREATOR },
         // { "vacuum", AtomType.VACUUM }
     };
@@ -88,11 +85,7 @@ public static class Reactor
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"
                                    + @"(?<PI_OPERATOR>[\*/%])|"
                                    + @"(?<COMP_OPERATOR>(\>\>|\=\=|\<\<|\!\=|\>\=|\<\=))|"
-                                   // + @"(?<UNEQUATES>\!\=)|"
-                                   // + @"(?<EQUATES>\=\=)|"
                                    + @"(?<EQUIVALENCE>\=)|"
-                                   // + @"(?<EXCEEDS>\>\>)|"
-                                   // + @"(?<RECEDES>\<\<)|"
                                    + @"(?<NEGATER>\!)|"
                                    + @"(?<DICHO_ENCLOSURE>\|)|"
                                    + @"(?<OPEN_ROUND_ENCLOSURE>\()|"
@@ -114,7 +107,7 @@ public static class Reactor
     public static List<Atom> Fission(string system)
     {
         List<Atom> atoms = new List<Atom>();
-        MatchCollection matches = Regex.Matches(Regex.Replace(system, @"//.*\Z", ""), Isotope);
+        MatchCollection matches = Regex.Matches(Regex.Replace(system, "//.*", ""), Isotope);
         int compoundNumber = 1;
         int atomNumber = 0;
         foreach (Match match in matches)
