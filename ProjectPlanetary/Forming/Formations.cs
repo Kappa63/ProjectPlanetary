@@ -38,14 +38,14 @@ public class ExplicitFormedMagnitude : ExplicitFormation
     public double Magnitude { get; init; }
 }
 
-public class ExplicitFormedText : ExplicitFormation
+public partial class ExplicitFormedText : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.TEXT;
     public string? Text { get; init; }
     
-    public ExplicitFormedText()
+    public ExplicitFormedText() 
     {
-        Moons = new Dictionary<string, ExplicitFormation>
+        Moons = new Dictionary<string, ExplicitFormation> // From Moons.Text
         {
             { "count", new ExplicitFormedMoon()
             {
@@ -65,46 +65,6 @@ public class ExplicitFormedText : ExplicitFormation
             } }
         };
     }
-
-    private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
-    {
-        return new ExplicitFormedMagnitude()
-        {
-            Magnitude = Text!.Length-2
-        };
-    }
-
-    private ExplicitFormedText Reverse(List<ExplicitFormation>? _)
-    {
-        return new ExplicitFormedText()
-        {
-            Text =  new string(Text!.Reverse().ToArray())
-        };
-    }
-    
-    private ExplicitFormedCluster ToCluster(List<ExplicitFormation>? _)
-    {
-        return new ExplicitFormedCluster()
-        {
-            Forms =  Text!.Trim('"').ToArray().Select(ExplicitFormation (c) => new ExplicitFormedText(){Text = "'"+c+"'"}).ToList()
-        };
-    }
-    
-    private ExplicitFormedText Shrink(List<ExplicitFormation>? payload)
-    {
-        if (payload is { Count: 2 } && payload[0].Type == ExplicitType.MAGNITUDE &&
-            payload[1].Type == ExplicitType.MAGNITUDE)
-        {
-            int start = (int)(payload[0] as ExplicitFormedMagnitude)!.Magnitude + 1;
-            return new ExplicitFormedText()
-            {
-                Text = string.Concat("\"",
-                    Text!.Substring(start, ((int)(payload[1] as ExplicitFormedMagnitude)!.Magnitude + 1)-start), "\"")
-            };
-        }
-
-        throw new ArgumentException("Expected payload to consist of magnitudes.");
-    }
 }
 
 public class ExplicitFormedDicho : ExplicitFormation
@@ -119,39 +79,53 @@ public class ExplicitFormedAlloy : ExplicitFormation
     public Dictionary<string, ExplicitFormation> Properties { get; init; } = new Dictionary<string, ExplicitFormation>();
 }
 
-public class ExplicitFormedCluster : ExplicitFormation
+public partial class ExplicitFormedCluster : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.CLUSTER;
     public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
     
     public ExplicitFormedCluster()
     {
-        Moons = new Dictionary<string, ExplicitFormation>
+        SynthMoons();
+        Moons = new Dictionary<string, ExplicitFormation> // From Moons.Clusters
         {
-            { "count", new ExplicitFormedMoon()
+            {_count.Key, _count.Value},
             {
-                Voyage = Count
-            } },
-            { "add", new ExplicitFormedMoon()
+                "add",
+                new ExplicitFormedMoon()
+                {
+                    Voyage = Add
+                }
+            },
             {
-                Voyage = Add
-            } },
+                "addAt",
+                new ExplicitFormedMoon()
+                {
+                    Voyage = AddAt
+                }
+            },
+            {
+                "rem",
+                new ExplicitFormedMoon()
+                {
+                    Voyage = Remove
+                }
+            },
+            {
+                "remAt",
+                new ExplicitFormedMoon()
+                {
+                    Voyage = RemoveAt
+                }
+            },
+            {
+                "annihilate",
+                new ExplicitFormedMoon()
+                {
+                    Voyage = Annihilate
+                }
+            }
         };
-    }
-
-    private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
-    {
-        return new ExplicitFormedMagnitude()
-        {
-            Magnitude = Forms.Count
-        };
-    }
-    
-    private ExplicitFormedVacuum Add(List<ExplicitFormation>? forms)
-    {
-        if (forms is not {Count:0})
-            Forms.AddRange(forms!);
-        return new ExplicitFormedVacuum();
     }
 }
 

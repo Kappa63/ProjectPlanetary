@@ -75,11 +75,11 @@ public static class Reactor
         { "orbit", AtomType.LAW_ORBITER},
         { "other", AtomType.OTHER},
         { "link", AtomType.LINK_CREATOR },
-        // { "vacuum", AtomType.VACUUM }
+        // { "Vacuum", AtomType.VACUUM }
     };
 
     private const string Isotope = "(?<TEXT>\\\"([^\\\"]*)\\\")|" // "(?<TEXT>(?<=\\\").*(?=\\\"))|"
-                                   + @"(?<MAGNITUDE>\d+)|"
+                                   + @"(?<MAGNITUDE>\d+(\.\d+)?)|"
                                    + @"(?<TEXT_MERGER>\.\.)|"
                                    + @"(?<ELEMENT>[a-zA-Z]\w*)|"
                                    + @"(?<SIGMA_OPERATOR>[+\-])|"

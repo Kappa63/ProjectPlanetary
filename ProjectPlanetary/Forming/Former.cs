@@ -307,7 +307,7 @@ public class Former
             ExplicitFormedPlanet tempPlanet = (planet as ExplicitFormedPlanet)!;
             Space planetSpace = new Space(tempPlanet.PlanetSpace);
             if (formedPayload.Count != tempPlanet.PayloadSymbols.Count)
-                throw new ArgumentException("Payload is lacking elements.");
+                throw new ArgumentException("Payload Mismatch.");
             for (int i = 0; i < tempPlanet.PayloadSymbols.Count; i++)
                 planetSpace.synthesizeElement(tempPlanet.PayloadSymbols[i], formedPayload[i], false);
             return this.formCompound(tempPlanet.PlanetCompound!, planetSpace);
