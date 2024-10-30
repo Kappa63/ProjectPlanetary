@@ -25,6 +25,12 @@ public abstract class ExplicitFormation
     {
         return Moons.TryGetValue(planetSymbol, out planet);
     }
+
+    protected virtual void SynthMoons(){}
+    protected ExplicitFormation()
+    {
+        SynthMoons();
+    }
 }
 
 public class ExplicitFormedVacuum : ExplicitFormation
@@ -40,31 +46,9 @@ public class ExplicitFormedMagnitude : ExplicitFormation
 
 public partial class ExplicitFormedText : ExplicitFormation
 {
+    // count(), reverse(), toCluster(), shrink(mag, mag)
     public override ExplicitType Type { get; } = ExplicitType.TEXT;
     public string? Text { get; init; }
-    
-    public ExplicitFormedText() 
-    {
-        Moons = new Dictionary<string, ExplicitFormation> // From Moons.Text
-        {
-            { "count", new ExplicitFormedMoon()
-            {
-                Voyage = Count
-            }  },
-            { "reverse", new ExplicitFormedMoon()
-            {
-                Voyage = Reverse
-            } },
-            { "toCluster", new ExplicitFormedMoon()
-            {
-                Voyage = ToCluster
-            } },
-            { "shrink", new ExplicitFormedMoon()
-            {
-                Voyage = Shrink
-            } }
-        };
-    }
 }
 
 public class ExplicitFormedDicho : ExplicitFormation
@@ -81,52 +65,9 @@ public class ExplicitFormedAlloy : ExplicitFormation
 
 public partial class ExplicitFormedCluster : ExplicitFormation
 {
+    // at(mag), formAt(mag, any), count(), add(*any), addAt(mag, *any), rem(*any), remAt(mag), annihilate()
     public override ExplicitType Type { get; } = ExplicitType.CLUSTER;
     public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
-    
-    public ExplicitFormedCluster()
-    {
-        SynthMoons();
-        Moons = new Dictionary<string, ExplicitFormation> // From Moons.Clusters
-        {
-            {_count.Key, _count.Value},
-            {
-                "add",
-                new ExplicitFormedMoon()
-                {
-                    Voyage = Add
-                }
-            },
-            {
-                "addAt",
-                new ExplicitFormedMoon()
-                {
-                    Voyage = AddAt
-                }
-            },
-            {
-                "rem",
-                new ExplicitFormedMoon()
-                {
-                    Voyage = Remove
-                }
-            },
-            {
-                "remAt",
-                new ExplicitFormedMoon()
-                {
-                    Voyage = RemoveAt
-                }
-            },
-            {
-                "annihilate",
-                new ExplicitFormedMoon()
-                {
-                    Voyage = Annihilate
-                }
-            }
-        };
-    }
 }
 
 public class ExplicitFormedPrimePlanet : ExplicitFormation

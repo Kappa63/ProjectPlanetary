@@ -2,12 +2,47 @@ namespace ProjectPlanetary.Forming;
 
 public partial class ExplicitFormedCluster
 {
-    private KeyValuePair<string, ExplicitFormedMoon> _count;
-    
-    private void SynthMoons()
+    protected override void SynthMoons()
     {
-        _count = new KeyValuePair<string, ExplicitFormedMoon>( "count", new ExplicitFormedMoon() { Voyage = Count } );
+        Moons.Add("at", new ExplicitFormedMoon() { Voyage = At });
+        Moons.Add("formAt", new ExplicitFormedMoon() { Voyage = TransformTo });
+        Moons.Add("count", new ExplicitFormedMoon() { Voyage = Count });
+        Moons.Add("add", new ExplicitFormedMoon() { Voyage = Add });
+        Moons.Add("addAt", new ExplicitFormedMoon() { Voyage = AddAt });
+        Moons.Add("rem", new ExplicitFormedMoon() { Voyage = Remove });
+        Moons.Add("remAt", new ExplicitFormedMoon() { Voyage = RemoveAt });
+        Moons.Add("annihilate", new ExplicitFormedMoon() { Voyage = Annihilate });
     }
+    
+    private ExplicitFormation At(List<ExplicitFormation>? payload)
+    {
+        if (payload is { Count: 1 })
+        {
+            if (payload[0].Type == ExplicitType.MAGNITUDE)
+                return Forms[(int)(payload[0] as ExplicitFormedMagnitude)!.Magnitude];
+            throw new ArgumentException("Expected payload to contain a valid position.");
+        }
+        return new ExplicitFormedVacuum();
+    }
+    
+    private ExplicitFormation TransformTo(List<ExplicitFormation>? payload)
+    {
+        if (payload is { Count: 2 })
+        {
+            if (payload[0].Type == ExplicitType.MAGNITUDE)
+                Forms[(int)(payload[0] as ExplicitFormedMagnitude)!.Magnitude] = payload[1];
+            else 
+                throw new ArgumentException("Expected payload to contain a valid position.");
+        }
+        return new ExplicitFormedVacuum();
+    }
+    
+    // private ExplicitFormation Has(List<ExplicitFormation>? payload)
+    // {
+    //     if (payload is { Count: 1 })
+    //         return new ExplicitFormedDicho() { State = Forms.Contains(payload[0]) };
+    //     return new ExplicitFormedVacuum();
+    // }
     
     private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
     {

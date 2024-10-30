@@ -1,0 +1,86 @@
+synth pos = 0;
+synth turn = 0;
+synth board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+
+synth planet ejectBoard(brd){
+    eject.out("  ", brd.at(0), "  |  ", brd.at(1), "  |  ", brd.at(2), "  \n-----------------\n  ", brd.at(3), "  |  ", brd.at(4), "  |  ", brd.at(5), "  \n-----------------\n  ", brd.at(6), "  |  ", brd.at(7), "  |  ", brd.at(8), "  ");
+};
+
+synth planet playMove(brd, plyr, pos){
+    law |plyr == 0| valid {
+        brd.formAt(pos-1, "X");
+    } other {
+        brd.formAt(pos-1, "O");
+    };
+};
+
+synth planet checkRow(brd){
+    synth win = False;
+    law |brd.at(0) == brd.at(1) and brd.at(0) == brd.at(2)| valid {
+        win = True;
+    };
+    law |brd.at(3) == brd.at(4) and brd.at(3) == brd.at(5)| valid {
+        win = True;
+    };    
+    law |brd.at(6) == brd.at(7) and brd.at(6) == brd.at(8)| valid {
+        win = True;
+    };
+    win;
+};
+
+synth planet checkColumn(brd){
+    synth win = False;
+    law |brd.at(0) == brd.at(3) and brd.at(0) == brd.at(6)| valid {
+        win = True;
+    };
+    law |brd.at(1) == brd.at(4) and brd.at(1) == brd.at(7)| valid {
+        win = True;
+    };    
+    law |brd.at(2) == brd.at(5) and brd.at(2) == brd.at(8)| valid {
+        win = True;
+    };
+    win;
+};
+
+synth planet checkDiag(brd){
+    synth win = False;
+    law |brd.at(0) == brd.at(4) and brd.at(0) == brd.at(8)| {
+        win = True;
+    };
+    law |brd.at(2) == brd.at(4) and brd.at(2) == brd.at(6)| {
+        win = True;
+    };
+    win;
+};
+
+synth planet checkWin(brd){
+    |checkRow(brd) or checkDiag(brd) or checkColumn(brd)|;
+};
+
+synth planet getPlayerPos(brd){
+    synth pos = 0;
+    law |pos << 1 or pos >> 9| valid orbit {
+        eject.out(<"Player "..((turn%2)+1).." select a space to play in: ">);
+        pos = capture.magnitude();
+    } other law |brd.at(pos-1) == pos| invalid {
+        pos = getPlayerPos(brd);
+    };
+    pos;
+};
+
+eject.out("Let's play Tic Tac Toe");
+ejectBoard(board);
+
+law |turn << 9| valid orbit {
+    pos = getPlayerPos(board);
+    playMove(board, turn%2, pos);
+    law |checkWin(board)| valid {
+        eject.out(<"Player "..((turn%2)+1).." Wins!">);
+        turn = 10;
+    };
+    ejectBoard(board);
+    turn = turn+1;
+    pos = 0;
+};
+eject.out("Draw!");

@@ -2,6 +2,14 @@ namespace ProjectPlanetary.Forming;
 
 public partial class ExplicitFormedText
 {
+    protected override void SynthMoons()
+    {
+        Moons.Add("count", new ExplicitFormedMoon() { Voyage = Count });
+        Moons.Add("reverse", new ExplicitFormedMoon() { Voyage = Reverse });
+        Moons.Add("toCluster", new ExplicitFormedMoon() { Voyage = ToCluster });
+        Moons.Add("shrink", new ExplicitFormedMoon() { Voyage = Shrink });
+    }
+    
     private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
     {
         return new ExplicitFormedMagnitude()

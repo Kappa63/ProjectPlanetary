@@ -296,6 +296,13 @@ public class Bonder
         return preGeneralOperation;
     }
 
+    private string readyTextSpecials(string txt)
+    {
+        txt = txt.Replace(@"\n", "\n");
+        txt = txt.Replace(@"\t", "\t");
+        return txt;
+    }
+
     private Operation findNextBondedOperation()
     {
         // Atom curAtom = this.retrieveAtom(false);
@@ -303,7 +310,7 @@ public class Bonder
         {
             AtomType.DICHO_ENCLOSURE => this.bondDichotomicOperation(),
             AtomType.OPEN_ANGLED_ENCLOSURE => this.bondTextOperation(),
-            AtomType.TEXT => new ExplicitText(){Text = this.retrieveAtom(true).Value,},
+            AtomType.TEXT => new ExplicitText(){Text = readyTextSpecials(this.retrieveAtom(true).Value),},
             _ => this.bondVoyageTrajectoryOperation()
         };
     }
