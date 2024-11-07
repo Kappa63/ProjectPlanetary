@@ -16,29 +16,25 @@ public enum ExplicitType
     MOON
 }
 
-public abstract class ExplicitFormation
+public abstract partial class ExplicitFormation
 {
     public abstract ExplicitType Type { get; }
     protected Dictionary<string, ExplicitFormation> Moons { get; init; } = new Dictionary<string, ExplicitFormation>();
-
-    public bool TryGetMoon(string planetSymbol, out ExplicitFormation? planet)
-    {
-        return Moons.TryGetValue(planetSymbol, out planet);
-    }
-
-    protected virtual void SynthMoons(){}
-    protected ExplicitFormation()
-    {
-        SynthMoons();
-    }
 }
 
 public class ExplicitFormedVacuum : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.VACUUM;
+
+    public override bool Equals(ExplicitFormation? other)
+    {
+        if (other!.Type == ExplicitType.VACUUM)
+            return true;
+        return false;
+    }
 }
 
-public class ExplicitFormedMagnitude : ExplicitFormation
+public partial class ExplicitFormedMagnitude : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.MAGNITUDE;
     public double Magnitude { get; init; }
@@ -51,13 +47,13 @@ public partial class ExplicitFormedText : ExplicitFormation
     public string? Text { get; init; }
 }
 
-public class ExplicitFormedDicho : ExplicitFormation
+public partial class ExplicitFormedDicho : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.DICHO;
     public bool State { get; init; }
 }
 
-public class ExplicitFormedAlloy : ExplicitFormation
+public partial class ExplicitFormedAlloy : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.ALLOY;
     public Dictionary<string, ExplicitFormation> Properties { get; init; } = new Dictionary<string, ExplicitFormation>();
@@ -70,7 +66,7 @@ public partial class ExplicitFormedCluster : ExplicitFormation
     public List<ExplicitFormation> Forms { get; init; } = new List<ExplicitFormation>();
 }
 
-public class ExplicitFormedPrimePlanet : ExplicitFormation
+public partial class ExplicitFormedPrimePlanet : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.PRIME_PLANET;
     public Func<List<ExplicitFormation>, Space, ExplicitFormation>? Voyage { get; init; }    
@@ -81,9 +77,14 @@ public class ExplicitFormedMoon : ExplicitFormation
     public override ExplicitType Type { get; } = ExplicitType.MOON;
     // public List<object?>? Payload { get; init; }
     public Func<List<ExplicitFormation>?, ExplicitFormation>? Voyage { get; init; }    
+    
+    public override bool Equals(ExplicitFormation? other)
+    {
+        return other!.GetHashCode() == GetHashCode();
+    }
 }
 
-public class ExplicitFormedPlanet : ExplicitFormation
+public partial class ExplicitFormedPlanet : ExplicitFormation
 {
     public override ExplicitType Type { get; } = ExplicitType.PLANET;
     public string? Symbol { get; init; }

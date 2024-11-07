@@ -2,7 +2,7 @@ stable synth h = [4, 3, 2, "ji", True, |False or True|];
 eject.debug(h);
 eject.out(h);
 eject.out(h.at(0));
-stable synth a = [1, {hi: 34}, "23", |True or False|, Vacuum];
+stable synth a = [1, {hi: 34}, "23", |True or False|, Vacuum, [1, 2]];
 eject.debug(a);
 eject.out(a);
 
@@ -13,3 +13,8 @@ eject.out("----");
 traverse a:i {
     eject.out(i);
 };
+eject.out("----");
+a.formAt(0, 12);
+eject.out(a.has([1, 2]));
+a.annihilate();
+eject.out(a);

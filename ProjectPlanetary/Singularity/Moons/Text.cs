@@ -10,6 +10,14 @@ public partial class ExplicitFormedText
         Moons.Add("shrink", new ExplicitFormedMoon() { Voyage = Shrink });
     }
     
+    public override bool Equals(ExplicitFormation? other)
+    {
+        if (other!.Type == ExplicitType.TEXT)
+            return Text == (other as ExplicitFormedText)!.Text;
+        return false;
+    }
+    
+    
     private ExplicitFormedMagnitude Count(List<ExplicitFormation>? _)
     {
         return new ExplicitFormedMagnitude()
