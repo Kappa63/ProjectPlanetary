@@ -7,7 +7,8 @@ public static class AlloyBuilder
     private static readonly List<Expander> primeAlloyExpanders = new List<Expander>()
     {
         Capture.Expand.Expansion,
-        Eject.Expand.Expansion
+        Eject.Expand.Expansion,
+        Time.Expand.Expansion
     };
     
     public static void expandPrimeAlloys(Space sp)

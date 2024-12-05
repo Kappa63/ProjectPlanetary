@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace ProjectPlanetary.Forming;
 
 public partial class ExplicitFormedText
@@ -8,6 +10,7 @@ public partial class ExplicitFormedText
         Moons.Add("reverse", new ExplicitFormedMoon() { Voyage = Reverse });
         Moons.Add("toCluster", new ExplicitFormedMoon() { Voyage = ToCluster });
         Moons.Add("shrink", new ExplicitFormedMoon() { Voyage = Shrink });
+        Moons.Add("swap", new ExplicitFormedMoon() { Voyage = Swap });
     }
     
     public override bool Equals(ExplicitFormation? other)
@@ -56,5 +59,36 @@ public partial class ExplicitFormedText
         }
 
         throw new ArgumentException("Expected payload to consist of magnitudes.");
+    }
+
+    private ExplicitFormedText Swap(List<ExplicitFormation>? payload)
+    {
+        if (payload == null)
+            throw new ArgumentException("Expected payload.");
+
+        if (payload.Count < 2 || payload[0].Type != ExplicitType.TEXT || payload[1].Type != ExplicitType.TEXT)
+            throw new ArgumentException("Expected payload of Texts.");
+
+        string toSwap = (payload[0] as ExplicitFormedText)?.Text?.Trim('"') ??
+                        throw new ArgumentException("Invalid pattern in payload.");
+        string swapTo = (payload[1] as ExplicitFormedText)?.Text?.Trim('"') ??
+                        throw new ArgumentException("Invalid replacement in payload.");
+
+        Regex re = new Regex(toSwap);
+
+        if (payload.Count == 3 && payload[2].Type == ExplicitType.MAGNITUDE)
+        {
+            int maxSwaps = (int)((payload[2] as ExplicitFormedMagnitude)?.Magnitude ??
+                                 throw new ArgumentException("Invalid magnitude in payload."));
+            return new ExplicitFormedText
+            {
+                Text = re.Replace(Text!, swapTo, maxSwaps)
+            };
+        }
+
+        return new ExplicitFormedText
+        {
+            Text = re.Replace(Text!, swapTo)
+        };
     }
 }

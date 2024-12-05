@@ -3,9 +3,9 @@ using ProjectPlanetary.Forming;
 namespace ProjectPlanetary.Singularity.Alloys.Capture;
 public static class Expand
 {
-    public const string alloyName = "capture";
+    private const string alloyName = "capture";
 
-    public static readonly Dictionary<string, ExplicitFormation> planetTrajectories =
+    private static readonly Dictionary<string, ExplicitFormation> planetTrajectories =
         new Dictionary<string, ExplicitFormation>()
         {
             { "text", new ExplicitFormedPrimePlanet() { Voyage = Planets.textCapture } },

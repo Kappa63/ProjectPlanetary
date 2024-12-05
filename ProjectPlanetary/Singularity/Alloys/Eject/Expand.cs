@@ -3,9 +3,9 @@ using ProjectPlanetary.Forming;
 namespace ProjectPlanetary.Singularity.Alloys.Eject;
 public static class Expand
 {
-    public const string alloyName = "eject";
+    private const string alloyName = "eject";
 
-    public static readonly Dictionary<string, ExplicitFormation> planetTrajectories =
+    private static readonly Dictionary<string, ExplicitFormation> planetTrajectories =
         new Dictionary<string, ExplicitFormation>()
         {
             { "out", new ExplicitFormedPrimePlanet() { Voyage = Planets.outputEject } },

@@ -1,4 +1,4 @@
-link "../../../PlanetaryTests/ExplicitTests/ClusterTests.ps";
+// link "../../../PlanetaryTests/ExplicitTests/ClusterTests.ps";
 // link "../../../PlanetaryTests/TestPrograms/tictactoe.ps";
 
 // synth a = [1, 2, 3, "hi"];
@@ -14,3 +14,9 @@ link "../../../PlanetaryTests/ExplicitTests/ClusterTests.ps";
 // synth z = 9;
 
 // eject.out(12.78+13.4+9);
+
+synth x = "hi how are you bro. hi hi hi hi hi";
+eject.out(x);
+x = x.swap("hi", "bye", 2);
+eject.out(x);
+eject.out(time.instant());
